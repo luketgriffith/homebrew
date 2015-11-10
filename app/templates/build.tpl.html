@@ -1,0 +1,40 @@
+
+<div class="builder">
+  <h3>Add Grains</h3>
+  <form ng-submit="addGrain(ing)">
+    <input type="text" placeholder="Enter Malt" class="grainType" ng-model="ing.grain">
+    <input type="text" placeholder="Grain Weight(lbs)" class="grainWeight" ng-model="ing.weight">
+    <button>Add</button>
+  </form>
+
+  <h3>Add Hops</h3>
+  <form ng-submit="addHops(hop)">
+    <input type="text" placeholder="Enter Hop" class="hopType" ng-model="hop.name">
+    <input type="text" placeholder="Hop Weight (oz)" class="hopWeight" ng-model="hop.weight">
+    <input type="text" placeholder="Alpha Acid %" class="hopAcid" ng-model="hop.acid">
+    <input type="text" placeholder="Boil Length" class="hopBoil" ng-model="hop.boil">
+    <button>Add</button>
+  </form>
+
+  <h3>Add Yeast</h3>
+  <form ng-submit="addYeast(yeast)">
+    <input type="text" placeholder="Enter Yeast" class="yeastType" ng-model="yeast.name">
+    <button>Add</button>
+  </form>
+</div>
+
+<div class="recipe">
+  <h2>Recipe</h2>
+  <h3>Grain</h3>
+  <ul>
+    <li ng-repeat = "g in grainList">{{g.weight}} lb  {{g.grain}}</li>
+  </ul>
+  <h3>Hops</h3>
+  <ul>
+    <li ng-repeat = "h in hopList">{{h.weight}} oz {{h.name}} for 
+    {{h.boil}} minutes ({{h.acid}}%)</li>
+  </ul>  
+  <h3>Yeast</h3>
+  <ul>
+    <li ng-repeat = "y in yeastList">{{y.name}}</li>
+</div>

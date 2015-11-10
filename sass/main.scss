@@ -1,0 +1,33 @@
+// Put any @imports here
+// See Readme for a list of supported ones
+@import 'foundation';
+.container{
+  width: 100%;
+  margin: 0 auto;
+  text-align: center;
+}
+ul{
+  list-style: none;
+}
+body {
+  background: #e2ebf3;
+}
+.top-bar-section ul li{
+  font-size: 1.2rem;
+}
+.builder{
+  width: 40%;
+  float: left;
+  margin-left: 2.5%;
+  margin-top: 25px;
+}
+.recipe{
+  width: 40%;
+  float: right;
+  margin-right: 2.5%;
+  margin-top: 25px;
+}
+footer{
+  clear: both;
+  text-align: center;
+}
