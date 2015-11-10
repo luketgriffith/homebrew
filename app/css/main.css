@@ -6398,8 +6398,9 @@ ul {
 body {
   background: #e2ebf3; }
 
-.top-bar-section ul li {
-  font-size: 1.2rem; }
+.login {
+  width: 50%;
+  margin: 0 auto; }
 
 .builder {
   width: 40%;
