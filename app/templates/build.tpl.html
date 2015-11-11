@@ -1,5 +1,12 @@
 
 <div class="builder">
+  <h3>What Is This Glorious Creation?</h3>
+  <form ng-submit="addTitle(name, style)">
+    <input type="text" placeholder="Beer Name" ng-model="name">
+    <input type="text" placeholder="Beer Style" ng-model="style">
+    <button>Add</button>
+  </form>
+
   <h3>Add Grains</h3>
   <form ng-submit="addGrain(ing)">
     <input type="text" placeholder="Enter Malt" class="grainType" ng-model="ing.grain">
@@ -21,10 +28,16 @@
     <input type="text" placeholder="Enter Yeast" class="yeastType" ng-model="yeast.name">
     <button>Add</button>
   </form>
+
+  <form ng-submit="saveRecipe()">
+  <button>Save Recipe</button>
+  </form>
+
 </div>
 
 <div class="recipe">
   <h2>Recipe</h2>
+  <h3 ng-repeat="n in beerName">{{n.name}} ({{n.style}})</h3>
   <h3>Grain</h3>
   <ul>
     <li ng-repeat = "g in grainList">{{g.weight}} lb  {{g.grain}}</li>

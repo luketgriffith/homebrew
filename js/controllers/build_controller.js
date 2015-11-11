@@ -1,5 +1,21 @@
-let BuildController = function($scope){
+let BuildController = function($scope, $http, PARSE){
   $scope.title= 'Build'
+  let url = PARSE.URL + 'classes/recipes';
+  
+  $scope.wholeRecipe=[];
+
+  //add title of beer function
+  $scope.beerName=[];
+
+
+  function Name (obj){
+    this.name= obj.name
+  }
+  $scope.addTitle = function (name) {
+    let x = new Name(name)
+    return x;
+  }
+
   //adding grain function
   $scope.grainList=[];
 
@@ -43,9 +59,25 @@ let BuildController = function($scope){
     $scope.yeastList.push(x);
     $scope.yeast.name= '';
   }
+  $scope.saveRecipe = function(){
+
+    
+    let recipe= {
+      name: x.name,
+      grains: $scope.grainList,
+      hops: $scope.hopList,
+      yeast: $scope.yeastList
+      
+    }
+    console.log(recipe);
+    $http.post(url, recipe, PARSE.CONFIG).then( (res)=>{
+      console.log(res);
+    })
+
+  };
 };
 
  
-BuildController.$inject = ['$scope'];
+BuildController.$inject = ['$scope', '$http', 'PARSE'];
 
 export default BuildController;

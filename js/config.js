@@ -23,6 +23,11 @@ let config = function ($stateProvider, $urlRouterProvider){
       controller: 'BuildController',
       templateUrl: 'templates/build.tpl.html'
     })
+    .state('root.single',{
+      url: '/single/:name',
+      controller: 'SingleController',
+      templateUrl: 'templates/single.tpl.html'
+    })
 
 
 };
