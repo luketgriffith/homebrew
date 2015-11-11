@@ -4,16 +4,31 @@ let BuildController = function($scope, $http, PARSE){
   
   $scope.wholeRecipe=[];
 
-  //add title of beer function
+  //add name of beer function
   $scope.beerName=[];
 
 
   function Name (obj){
     this.name= obj.name
   }
+
   $scope.addTitle = function (name) {
-    let x = new Name(name)
-    return x;
+    let x = new Name(name);
+    $scope.beerName.push(x);
+    $scope.name={};
+  }
+
+  //add style of beer function
+  $scope.beerStyle=[];
+
+  function Style (obj){
+    this.style = obj.style
+  }
+
+  $scope.addStyle = function (style) {
+    let x = new Style(style);
+    $scope.beerStyle.push(x);
+    $scope.style={};
   }
 
   //adding grain function
@@ -57,13 +72,14 @@ let BuildController = function($scope, $http, PARSE){
   $scope.addYeast = function(yeast){
     let x = new Yeast(yeast);
     $scope.yeastList.push(x);
-    $scope.yeast.name= '';
+    $scope.yeast = {};
   }
   $scope.saveRecipe = function(){
 
     
     let recipe= {
-      name: x.name,
+      name: $scope.beerName,
+      style: $scope.beerStyle,
       grains: $scope.grainList,
       hops: $scope.hopList,
       yeast: $scope.yeastList

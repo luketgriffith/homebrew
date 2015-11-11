@@ -1,9 +1,12 @@
 
 <div class="builder">
   <h3>What Is This Glorious Creation?</h3>
-  <form ng-submit="addTitle(name, style)">
-    <input type="text" placeholder="Beer Name" ng-model="name">
-    <input type="text" placeholder="Beer Style" ng-model="style">
+  <form ng-submit="addTitle(name)">
+    <input type="text" placeholder="Beer Name" ng-model="name.name">
+    <button>Add</button>
+  </form>
+  <form ng-submit="addStyle(style)">
+    <input type="text" placeholder="Beer Style" ng-model="style.style">
     <button>Add</button>
   </form>
 
@@ -37,7 +40,8 @@
 
 <div class="recipe">
   <h2>Recipe</h2>
-  <h3 ng-repeat="n in beerName">{{n.name}} ({{n.style}})</h3>
+  <h3 ng-repeat="n in beerName">{{n.name}}</h3>
+  <h4 ng-repeat="s in beerStyle">{{s.style}}</h4>
   <h3>Grain</h3>
   <ul>
     <li ng-repeat = "g in grainList">{{g.weight}} lb  {{g.grain}}</li>
