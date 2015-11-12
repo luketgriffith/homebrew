@@ -1,5 +1,8 @@
 <h1>{{title}}</h1>
 <ul>
-  <li ng-repeat="n in nameList"><a href="#/single/{{n.id}}">{{n.id}} 
-  </a></li>
+  <li ng-repeat="n in nameList">
+    <a href="#/single/{{n.id}}">
+      {{n.name}} ({{n.style}})
+    </a>
+  </li>
 </ul>

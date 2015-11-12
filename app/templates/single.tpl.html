@@ -1,1 +1,17 @@
-<h1>{{name}}</h1>
+<h1>{{recipe.name.name.name}}</h1>
+<h2>{{recipe.style.style.style}}</h2>
+<ul>
+  <li ng-repeat="t in recipe.grains">
+    {{t.weight}}lb {{t.grain}}
+  </li>
+</ul>
+<ul>
+  <li ng-repeat="t in recipe.hops">
+    {{t.weight}}oz of {{t.name}} ({{t.acid}}%), {{t.boil}} minutes
+  </li>
+</ul>
+<ul>
+  <li ng-repeat="t in recipe.yeast">
+    {{t.name}}
+  </li>
+</ul>

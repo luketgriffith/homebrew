@@ -5,7 +5,7 @@ let BuildController = function($scope, $http, PARSE){
   $scope.wholeRecipe=[];
 
   //add name of beer function
-  $scope.beerName=[];
+  $scope.beerName={};
 
 
   function Name (obj){
@@ -14,12 +14,14 @@ let BuildController = function($scope, $http, PARSE){
 
   $scope.addTitle = function (name) {
     let x = new Name(name);
-    $scope.beerName.push(x);
+    $scope.beerName= {
+      name: x
+    };
     $scope.name={};
   }
 
   //add style of beer function
-  $scope.beerStyle=[];
+  $scope.beerStyle={};
 
   function Style (obj){
     this.style = obj.style
@@ -27,7 +29,9 @@ let BuildController = function($scope, $http, PARSE){
 
   $scope.addStyle = function (style) {
     let x = new Style(style);
-    $scope.beerStyle.push(x);
+    $scope.beerStyle = {
+      style: x
+    };
     $scope.style={};
   }
 

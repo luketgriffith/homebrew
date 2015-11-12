@@ -25,7 +25,7 @@ var config = function config($stateProvider, $urlRouterProvider) {
     controller: 'BuildController',
     templateUrl: 'templates/build.tpl.html'
   }).state('root.single', {
-    url: '/single/:name',
+    url: '/single/:id',
     controller: 'SingleController',
     templateUrl: 'templates/single.tpl.html'
   });
@@ -49,7 +49,7 @@ var BuildController = function BuildController($scope, $http, PARSE) {
   $scope.wholeRecipe = [];
 
   //add name of beer function
-  $scope.beerName = [];
+  $scope.beerName = {};
 
   function Name(obj) {
     this.name = obj.name;
@@ -57,12 +57,14 @@ var BuildController = function BuildController($scope, $http, PARSE) {
 
   $scope.addTitle = function (name) {
     var x = new Name(name);
-    $scope.beerName.push(x);
+    $scope.beerName = {
+      name: x
+    };
     $scope.name = {};
   };
 
   //add style of beer function
-  $scope.beerStyle = [];
+  $scope.beerStyle = {};
 
   function Style(obj) {
     this.style = obj.style;
@@ -70,7 +72,9 @@ var BuildController = function BuildController($scope, $http, PARSE) {
 
   $scope.addStyle = function (style) {
     var x = new Style(style);
-    $scope.beerStyle.push(x);
+    $scope.beerStyle = {
+      style: x
+    };
     $scope.style = {};
   };
 
@@ -175,16 +179,16 @@ var RecipeController = function RecipeController($scope, $http, PARSE) {
   $http.get(url, PARSE.CONFIG).then(function (res) {
 
     var wat = res.data.results;
-
     wat.map(function (x) {
-      var y = {
-        name: x.name.map(function (y) {
-          return y.name;
-        }),
-        id: x.objectId
+      var y = x.name.name.name;
+      var z = x.style.style.style;
+      var id = x.objectId;
+      var nameObj = {
+        name: y,
+        style: z,
+        id: id
       };
-      $scope.nameList.push(y);
-      console.log($scope.nameList);
+      $scope.nameList.push(nameObj);
     });
   });
 };
@@ -200,11 +204,18 @@ module.exports = exports['default'];
 Object.defineProperty(exports, '__esModule', {
   value: true
 });
-var SingleController = function SingleController($scope) {
-  $scope.title = 'Homebrews';
+var SingleController = function SingleController($scope, $stateParams, $http, PARSE) {
+
+  var url = PARSE.URL + 'classes/recipes/' + $stateParams.id;
+
+  $http.get(url, PARSE.CONFIG).then(function (res) {
+
+    $scope.recipe = res.data;
+    console.log($scope.recipe);
+  });
 };
 
-SingleController.$inject = ['$scope'];
+SingleController.$inject = ['$scope', '$stateParams', '$http', 'PARSE'];
 
 exports['default'] = SingleController;
 module.exports = exports['default'];
