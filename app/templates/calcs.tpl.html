@@ -43,3 +43,16 @@
 <span>Note: this chart assumes no loss of utilization from hop aging, weak boil, etc., so you may want to subtract a few points depending on your setup.</span>                     
 </div>
 
+<div class="mash">
+<h4>Strike Water Calculator</h4>
+<form ng-submit="mashCalc(a, b, c, d)">
+  <input type="text" placeholder="Target Mash Temp" ng-model="a">
+  <input type="text" placeholder="Grain Temp" ng-model="b">
+  <input type="text" placeholder="Water Volume
+  (quarts)" ng-model="c">
+  <input type="text" placeholder="Grain Weight" ng-model="d">
+  <button>Calculate</button><span>{{mash}}</span>
+</form>
+</div>
+
+

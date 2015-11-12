@@ -8,7 +8,10 @@ let CalcController = function($scope){
   $scope.reset = function(){
     $scope.answer = 0;
   }
- 
+ $scope.mashCalc = function(a, b, c, d){
+    $scope.mash= ((.2/(c/d))*(a-b)) + a;
+    console.log(a, b, c, d);
+  }
 };
 
 CalcController.$inject = ['$scope'];
