@@ -32,6 +32,11 @@
     <button>Add</button>
   </form>
 
+  <form ng-submit="addComment(comment)">
+    <textarea ng-model="comment.comment" placeholder="Other Comments"></textarea>
+    <button>Add</button>
+  </form>
+
   <form ng-submit="saveRecipe()">
   <button>Save Recipe</button>
   </form>

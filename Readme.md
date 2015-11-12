@@ -1,6 +1,6 @@
 ## Welcome to My Project
 
-> I am your Readme.md file, you should probably update me.
+> An app for creating and storing homebrew recipes. Add yours!
 
 
 ## Usage

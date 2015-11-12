@@ -1,0 +1,29 @@
+<div class="edit">
+<h2>{{title}} Recipe</h2>
+<form ng-submit="update(recipe)">
+  <span>Name</span><input ng-model="recipe.name.name.name">
+  <span>Style</span><input ng-model="recipe.style.style.style">
+  <ul>
+    <li ng-repeat="g in recipe.grains">
+      <span>Grain Type</span><input ng-model="g.grain">
+      <span>Grain Weight</span><input ng-model="g.weight">
+    </li>
+  </ul>
+  <ul>
+    <li ng-repeat="h in recipe.hops">
+      <span>Hop Name</span><input ng-model="h.name">
+      <span>Hop Weight</span><input ng-model="h.weight">
+      <span>Alpha Acid %</span><input ng-model="h.acid">
+      <span>Time Boiled</span><input ng-model="h.boil">
+    </li>  
+   </ul>
+   <ul>
+    <li ng-repeat="y in recipe.yeast">
+      <span>Yeast Name</span><input ng-model="y.name">
+    </li>
+   </ul> 
+   <span>Comments, Additives, Etc.</span>
+  <input ng-model="recipe.comments.comments.comment">
+  <button>Update</button>
+ </form> 
+ </div>

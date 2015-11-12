@@ -28,6 +28,14 @@ var config = function config($stateProvider, $urlRouterProvider) {
     url: '/single/:id',
     controller: 'SingleController',
     templateUrl: 'templates/single.tpl.html'
+  }).state('root.calcs', {
+    url: '/calcs',
+    controller: 'CalcController',
+    templateUrl: 'templates/calcs.tpl.html'
+  }).state('root.edit', {
+    url: '/edit/:id',
+    controller: 'EditController',
+    templateUrl: 'templates/edit.tpl.html'
   });
 };
 
@@ -121,6 +129,16 @@ var BuildController = function BuildController($scope, $http, PARSE) {
     $scope.yeastList.push(x);
     $scope.yeast = {};
   };
+  $scope.comments = {};
+  function Comment(obj) {
+    this.comment = obj.comment;
+  }
+  $scope.addComment = function (comment) {
+    $scope.comments = {
+      comments: comment
+    };
+    $scope.comment = {};
+  };
   $scope.saveRecipe = function () {
 
     var recipe = {
@@ -128,13 +146,12 @@ var BuildController = function BuildController($scope, $http, PARSE) {
       style: $scope.beerStyle,
       grains: $scope.grainList,
       hops: $scope.hopList,
-      yeast: $scope.yeastList
+      yeast: $scope.yeastList,
+      comments: $scope.comments
 
     };
-    console.log(recipe);
-    $http.post(url, recipe, PARSE.CONFIG).then(function (res) {
-      console.log(res);
-    });
+
+    $http.post(url, recipe, PARSE.CONFIG).then(function (res) {});
   };
 };
 
@@ -149,6 +166,55 @@ module.exports = exports['default'];
 Object.defineProperty(exports, '__esModule', {
   value: true
 });
+var CalcController = function CalcController($scope) {
+  $scope.title = 'Calculators';
+  $scope.answer = 0;
+  $scope.ibuCalc = function (w, a, u, b) {
+
+    $scope.answer = w * a * u / (1.34 * b) + $scope.answer;
+  };
+  $scope.reset = function () {
+    $scope.answer = 0;
+  };
+};
+
+CalcController.$inject = ['$scope'];
+
+exports['default'] = CalcController;
+module.exports = exports['default'];
+
+},{}],4:[function(require,module,exports){
+'use strict';
+
+Object.defineProperty(exports, '__esModule', {
+  value: true
+});
+var EditController = function EditController($scope, $http, PARSE, $stateParams) {
+  $scope.title = 'Edit';
+
+  var url = PARSE.URL + 'classes/recipes/' + $stateParams.id;
+  $http.get(url, PARSE.CONFIG).then(function (res) {
+    $scope.recipe = res.data;
+  });
+  $scope.update = function (recipe) {
+    console.log(recipe);
+    $http.put(url, recipe, PARSE.CONFIG).then(function (res) {
+      console.log(res);
+    });
+  };
+};
+
+EditController.$inject = ['$scope', '$http', 'PARSE', '$stateParams'];
+
+exports['default'] = EditController;
+module.exports = exports['default'];
+
+},{}],5:[function(require,module,exports){
+'use strict';
+
+Object.defineProperty(exports, '__esModule', {
+  value: true
+});
 var HomeController = function HomeController($scope) {
   $scope.title = 'Homebrews';
 };
@@ -158,7 +224,7 @@ HomeController.$inject = ['$scope'];
 exports['default'] = HomeController;
 module.exports = exports['default'];
 
-},{}],4:[function(require,module,exports){
+},{}],6:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -171,7 +237,7 @@ var _underscore = require('underscore');
 
 var _underscore2 = _interopRequireDefault(_underscore);
 
-var RecipeController = function RecipeController($scope, $http, PARSE) {
+var RecipeController = function RecipeController($scope, $http, PARSE, BeerService) {
   $scope.title = 'Recipes';
   $scope.nameList = [];
 
@@ -189,21 +255,29 @@ var RecipeController = function RecipeController($scope, $http, PARSE) {
         id: id
       };
       $scope.nameList.push(nameObj);
+      console.log($scope.nameList);
     });
   });
 };
 
-RecipeController.$inject = ['$scope', '$http', 'PARSE'];
+RecipeController.$inject = ['$scope', '$http', 'PARSE', 'BeerService'];
 
 exports['default'] = RecipeController;
 module.exports = exports['default'];
 
-},{"underscore":12}],5:[function(require,module,exports){
+},{"underscore":17}],7:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
   value: true
 });
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
+
+var _jquery = require('jquery');
+
+var _jquery2 = _interopRequireDefault(_jquery);
+
 var SingleController = function SingleController($scope, $stateParams, $http, PARSE) {
 
   var url = PARSE.URL + 'classes/recipes/' + $stateParams.id;
@@ -211,16 +285,14 @@ var SingleController = function SingleController($scope, $stateParams, $http, PA
   $http.get(url, PARSE.CONFIG).then(function (res) {
 
     $scope.recipe = res.data;
-    console.log($scope.recipe);
   });
 };
-
 SingleController.$inject = ['$scope', '$stateParams', '$http', 'PARSE'];
 
 exports['default'] = SingleController;
 module.exports = exports['default'];
 
-},{}],6:[function(require,module,exports){
+},{"jquery":15}],8:[function(require,module,exports){
 'use strict';
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
@@ -263,6 +335,26 @@ var _controllersSingle_controller = require('./controllers/single_controller');
 
 var _controllersSingle_controller2 = _interopRequireDefault(_controllersSingle_controller);
 
+var _servicesBeer_service = require('./services/beer_service');
+
+var _servicesBeer_service2 = _interopRequireDefault(_servicesBeer_service);
+
+var _servicesRecipe_service = require('./services/recipe_service');
+
+var _servicesRecipe_service2 = _interopRequireDefault(_servicesRecipe_service);
+
+var _servicesBuild_service = require('./services/build_service');
+
+var _servicesBuild_service2 = _interopRequireDefault(_servicesBuild_service);
+
+var _controllersCalc_controller = require('./controllers/calc_controller');
+
+var _controllersCalc_controller2 = _interopRequireDefault(_controllersCalc_controller);
+
+var _controllersEdit_controller = require('./controllers/edit_controller');
+
+var _controllersEdit_controller2 = _interopRequireDefault(_controllersEdit_controller);
+
 _angular2['default'].module('app', ['ui.router']).constant('PARSE', {
   URL: 'https://api.parse.com/1/',
   CONFIG: {
@@ -271,9 +363,54 @@ _angular2['default'].module('app', ['ui.router']).constant('PARSE', {
       'X-Parse-REST-API-Key': '0ZfhWw9HzAVBKwwLqWLUNxDSiZwgd56GWd92WHSU'
     }
   }
-}).config(_config2['default']).controller('HomeController', _controllersHome_controller2['default']).controller('RecipeController', _controllersRecipe_controller2['default']).controller('BuildController', _controllersBuild_controller2['default']).controller('SingleController', _controllersSingle_controller2['default']);
+}).config(_config2['default']).controller('HomeController', _controllersHome_controller2['default']).controller('RecipeController', _controllersRecipe_controller2['default']).controller('BuildController', _controllersBuild_controller2['default']).controller('SingleController', _controllersSingle_controller2['default']).controller('CalcController', _controllersCalc_controller2['default']).controller('EditController', _controllersEdit_controller2['default']).service('BeerService', _servicesBeer_service2['default']).service('RecipeService', _servicesRecipe_service2['default']).service('BuildService', _servicesBuild_service2['default']);
 
-},{"./config":1,"./controllers/build_controller":2,"./controllers/home_controller":3,"./controllers/recipe_controller":4,"./controllers/single_controller":5,"angular":9,"angular-ui-router":7,"jquery":10,"moment":11,"underscore":12}],7:[function(require,module,exports){
+},{"./config":1,"./controllers/build_controller":2,"./controllers/calc_controller":3,"./controllers/edit_controller":4,"./controllers/home_controller":5,"./controllers/recipe_controller":6,"./controllers/single_controller":7,"./services/beer_service":9,"./services/build_service":10,"./services/recipe_service":11,"angular":14,"angular-ui-router":12,"jquery":15,"moment":16,"underscore":17}],9:[function(require,module,exports){
+'use strict';
+
+Object.defineProperty(exports, '__esModule', {
+  value: true
+});
+var BeerService = function BeerService($http, PARSE, $stateParams) {
+  var url = PARSE.URL + 'classes/recipes/' + $stateParams.id;
+  this.getBeer = function () {
+    return $http({
+      url: url,
+      headers: PARSE.CONFIG.headers,
+      method: 'GET',
+      cache: true
+    });
+  };
+};
+
+BeerService.$inject = ['$http', 'PARSE', '$stateParams'];
+
+exports['default'] = BeerService;
+module.exports = exports['default'];
+
+},{}],10:[function(require,module,exports){
+'use strict';
+
+Object.defineProperty(exports, '__esModule', {
+  value: true
+});
+var BuildService = function BuildService($http, PARSE, $stateParams) {
+  var url = PARSE.URL + 'classes/recipes';
+
+  this.buildBeer = function (url, x, PARSE) {
+    return $http.post(url, x, PARSE.CONFIG);
+  };
+};
+
+BuildService.$inject = ['$http', 'PARSE', '$stateParams'];
+
+exports['default'] = BuildService;
+module.exports = exports['default'];
+
+},{}],11:[function(require,module,exports){
+"use strict";
+
+},{}],12:[function(require,module,exports){
 /**
  * State-based routing for AngularJS
  * @version v0.2.15
@@ -4644,7 +4781,7 @@ angular.module('ui.router.state')
   .filter('isState', $IsStateFilter)
   .filter('includedByState', $IncludedByStateFilter);
 })(window, window.angular);
-},{}],8:[function(require,module,exports){
+},{}],13:[function(require,module,exports){
 /**
  * @license AngularJS v1.4.7
  * (c) 2010-2015 Google, Inc. http://angularjs.org
@@ -33549,11 +33686,11 @@ $provide.value("$locale", {
 })(window, document);
 
 !window.angular.$$csp().noInlineStyle && window.angular.element(document.head).prepend('<style type="text/css">@charset "UTF-8";[ng\\:cloak],[ng-cloak],[data-ng-cloak],[x-ng-cloak],.ng-cloak,.x-ng-cloak,.ng-hide:not(.ng-hide-animate){display:none !important;}ng\\:form{display:block;}.ng-animate-shim{visibility:hidden;}.ng-anchor{position:absolute;}</style>');
-},{}],9:[function(require,module,exports){
+},{}],14:[function(require,module,exports){
 require('./angular');
 module.exports = angular;
 
-},{"./angular":8}],10:[function(require,module,exports){
+},{"./angular":13}],15:[function(require,module,exports){
 /*!
  * jQuery JavaScript Library v2.1.4
  * http://jquery.com/
@@ -42765,7 +42902,7 @@ return jQuery;
 
 }));
 
-},{}],11:[function(require,module,exports){
+},{}],16:[function(require,module,exports){
 //! moment.js
 //! version : 2.10.6
 //! authors : Tim Wood, Iskren Chernev, Moment.js contributors
@@ -45961,7 +46098,7 @@ return jQuery;
     return _moment;
 
 }));
-},{}],12:[function(require,module,exports){
+},{}],17:[function(require,module,exports){
 //     Underscore.js 1.8.3
 //     http://underscorejs.org
 //     (c) 2009-2015 Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
@@ -47511,7 +47648,7 @@ return jQuery;
   }
 }.call(this));
 
-},{}]},{},[6])
+},{}]},{},[8])
 
 
 //# sourceMappingURL=main.js.map

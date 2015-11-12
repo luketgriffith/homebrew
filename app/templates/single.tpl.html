@@ -1,17 +1,31 @@
 <h1>{{recipe.name.name.name}}</h1>
 <h2>{{recipe.style.style.style}}</h2>
+<a href="#/edit/{{recipe.objectId}}">Edit This Recipe</a>
+<hr>
+<h4>Grains</h4>
+
 <ul>
-  <li ng-repeat="t in recipe.grains">
-    {{t.weight}}lb {{t.grain}}
+  <li ng-repeat="t in recipe.grains" class="loadNum">
+      {{t.weight}}lb {{t.grain}}
   </li>
+
 </ul>
+<hr>
+<h4>Hops</h4>
 <ul>
-  <li ng-repeat="t in recipe.hops">
+  <li ng-repeat="t in recipe.hops" class="loadNum">
     {{t.weight}}oz of {{t.name}} ({{t.acid}}%), {{t.boil}} minutes
   </li>
 </ul>
+<hr>
+<h4>Yeast</h4>
 <ul>
-  <li ng-repeat="t in recipe.yeast">
+  <li ng-repeat="t in recipe.yeast" class="loadNum">
     {{t.name}}
   </li>
 </ul>
+<div class="comments loadNum">
+<hr>
+  <h4>Additives, Adjuncts, and Comments</h4>
+  <p>{{recipe.comments.comments.comment}}</p>
+</div>

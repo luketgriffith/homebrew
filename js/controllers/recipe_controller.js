@@ -1,6 +1,6 @@
 import _ from 'underscore';
 
-let RecipeController = function($scope, $http, PARSE){
+let RecipeController = function($scope, $http, PARSE, BeerService){
   $scope.title= 'Recipes'
   $scope.nameList= [];
   
@@ -18,7 +18,7 @@ let RecipeController = function($scope, $http, PARSE){
           id: id
         }
         $scope.nameList.push(nameObj)
-          
+          console.log($scope.nameList);
           }) 
 
       
@@ -26,8 +26,9 @@ let RecipeController = function($scope, $http, PARSE){
 
 
   })
+
 };
 
-RecipeController.$inject = ['$scope', '$http', 'PARSE'];
+RecipeController.$inject = ['$scope', '$http', 'PARSE', 'BeerService'];
 
 export default RecipeController;

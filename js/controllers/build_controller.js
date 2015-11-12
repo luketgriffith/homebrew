@@ -78,6 +78,16 @@ let BuildController = function($scope, $http, PARSE){
     $scope.yeastList.push(x);
     $scope.yeast = {};
   }
+  $scope.comments={};
+  function Comment (obj){
+    this.comment = obj.comment;
+  }
+  $scope.addComment = function(comment){
+    $scope.comments={
+      comments: comment
+    }
+    $scope.comment={}
+  }
   $scope.saveRecipe = function(){
 
     
@@ -86,12 +96,13 @@ let BuildController = function($scope, $http, PARSE){
       style: $scope.beerStyle,
       grains: $scope.grainList,
       hops: $scope.hopList,
-      yeast: $scope.yeastList
+      yeast: $scope.yeastList,
+      comments: $scope.comments
       
     }
-    console.log(recipe);
+    
     $http.post(url, recipe, PARSE.CONFIG).then( (res)=>{
-      console.log(res);
+     
     })
 
   };
