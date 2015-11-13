@@ -1,4 +1,4 @@
-let EditController = function($scope, $http, PARSE, $stateParams){
+let EditController = function($scope, $http, PARSE, $stateParams, $state){
   $scope.title= 'Edit'
   
   let url = PARSE.URL + 'classes/recipes/' + $stateParams.id;
@@ -9,12 +9,12 @@ let EditController = function($scope, $http, PARSE, $stateParams){
   $scope.update = function(recipe){
     console.log(recipe);
     $http.put(url, recipe, PARSE.CONFIG).then((res)=>{
-      console.log(res);
+      $state.go('root.about');
     })
   }
  
 };
 
-EditController.$inject = ['$scope', '$http', 'PARSE', '$stateParams'];
+EditController.$inject = ['$scope', '$http', 'PARSE', '$stateParams', '$state'];
 
 export default EditController;

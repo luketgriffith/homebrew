@@ -4,6 +4,9 @@ import moment from 'moment';
 
 import angular from "angular";
 import 'angular-ui-router';
+import 'angular-foundation';
+import 'sweetalert';
+import 'angular-h-sweetalert';
 import configFunction from './config';
 import HomeController from './controllers/home_controller';
 import RecipeController from './controllers/recipe_controller';
@@ -15,7 +18,7 @@ import BuildService from './services/build_service';
 import CalcController from './controllers/calc_controller';
 import EditController from './controllers/edit_controller';
 angular
-  .module('app', ['ui.router'])
+  .module('app', ['ui.router', 'mm.foundation', 'hSweetAlert'])
   .constant('PARSE', {
     URL: 'https://api.parse.com/1/',
     CONFIG:{

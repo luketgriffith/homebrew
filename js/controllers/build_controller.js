@@ -1,4 +1,4 @@
-let BuildController = function($scope, $http, PARSE){
+let BuildController = function($scope, $http, PARSE, $state){
   $scope.title= 'Build'
   let url = PARSE.URL + 'classes/recipes';
   
@@ -105,13 +105,13 @@ let BuildController = function($scope, $http, PARSE){
     }
     
     $http.post(url, recipe, PARSE.CONFIG).then( (res)=>{
-      console.log(res);
+      $state.go('root.about');
     })
 
   };
 };
 
  
-BuildController.$inject = ['$scope', '$http', 'PARSE'];
+BuildController.$inject = ['$scope', '$http', 'PARSE', '$state'];
 
 export default BuildController;

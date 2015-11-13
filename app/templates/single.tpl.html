@@ -2,11 +2,15 @@
 <h4>{{recipe.style.style}}</h4>
 <span>{{recipe.style.og}}</span><br>
 <a href="#/edit/{{recipe.objectId}}">Edit This Recipe</a>
-<button ng-click="delete()">Delete Recipe
+<button ng-click="basic()">Delete Recipe
 </button>
+
+    <div ng-init="x = 5">
+      <rating value="x" max="15" state-on="'fa-star'" state-off="'fa-star-o'"></rating>
+    </div>
+
 <hr>
 <h4>Grains</h4>
-
 <ul>
   <li ng-repeat="t in recipe.grains" class="loadNum">
       {{t.weight}}lb {{t.grain}}

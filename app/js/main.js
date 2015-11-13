@@ -50,7 +50,7 @@ module.exports = exports['default'];
 Object.defineProperty(exports, '__esModule', {
   value: true
 });
-var BuildController = function BuildController($scope, $http, PARSE) {
+var BuildController = function BuildController($scope, $http, PARSE, $state) {
   $scope.title = 'Build';
   var url = PARSE.URL + 'classes/recipes';
 
@@ -155,12 +155,12 @@ var BuildController = function BuildController($scope, $http, PARSE) {
     };
 
     $http.post(url, recipe, PARSE.CONFIG).then(function (res) {
-      console.log(res);
+      $state.go('root.about');
     });
   };
 };
 
-BuildController.$inject = ['$scope', '$http', 'PARSE'];
+BuildController.$inject = ['$scope', '$http', 'PARSE', '$state'];
 
 exports['default'] = BuildController;
 module.exports = exports['default'];
@@ -201,7 +201,7 @@ module.exports = exports["default"];
 Object.defineProperty(exports, '__esModule', {
   value: true
 });
-var EditController = function EditController($scope, $http, PARSE, $stateParams) {
+var EditController = function EditController($scope, $http, PARSE, $stateParams, $state) {
   $scope.title = 'Edit';
 
   var url = PARSE.URL + 'classes/recipes/' + $stateParams.id;
@@ -211,12 +211,12 @@ var EditController = function EditController($scope, $http, PARSE, $stateParams)
   $scope.update = function (recipe) {
     console.log(recipe);
     $http.put(url, recipe, PARSE.CONFIG).then(function (res) {
-      console.log(res);
+      $state.go('root.about');
     });
   };
 };
 
-EditController.$inject = ['$scope', '$http', 'PARSE', '$stateParams'];
+EditController.$inject = ['$scope', '$http', 'PARSE', '$stateParams', '$state'];
 
 exports['default'] = EditController;
 module.exports = exports['default'];
@@ -280,7 +280,7 @@ RecipeController.$inject = ['$scope', '$http', 'PARSE', 'BeerService'];
 exports['default'] = RecipeController;
 module.exports = exports['default'];
 
-},{"underscore":17}],7:[function(require,module,exports){
+},{"underscore":28}],7:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -293,7 +293,7 @@ var _jquery = require('jquery');
 
 var _jquery2 = _interopRequireDefault(_jquery);
 
-var SingleController = function SingleController($scope, $stateParams, $http, PARSE) {
+var SingleController = function SingleController($scope, $stateParams, $state, $http, PARSE, sweet) {
 
   var url = PARSE.URL + 'classes/recipes/' + $stateParams.id;
 
@@ -301,19 +301,38 @@ var SingleController = function SingleController($scope, $stateParams, $http, PA
 
     $scope.recipe = res.data;
 
-    $scope['delete'] = function () {
-      $http['delete'](url, PARSE.CONFIG).then(function (res) {
-        console.log(res);
+    $scope.rate = 7;
+    $scope.max = 10;
+    $scope.isReadonly = false;
+
+    $scope.hoveringOver = function (value) {
+      $scope.overStar = value;
+      $scope.percent = 100 * (value / $scope.max);
+    };
+
+    $scope.ratingStates = [{ stateOn: 'fa-check-circle', stateOff: 'fa-check-circle-o' }, { stateOn: 'fa-star', stateOff: 'fa-start-o' }, { stateOn: 'fa-heart', stateOff: 'fa-ban' }, { stateOn: 'fa-heart' }, { stateOff: 'fa-power-off' }];
+
+    console.log($scope.x);
+    $scope.basic = function () {
+      sweet.show({
+        title: 'Are you sure?',
+        text: 'It will be gone forever.',
+        showCancelButton: true,
+        confirmButtonText: "I hate it make it die"
+      }, function () {
+        $http['delete'](url, PARSE.CONFIG).then(function (res) {
+          $state.go('root.about');
+        });
       });
     };
   });
 };
-SingleController.$inject = ['$scope', '$stateParams', '$http', 'PARSE'];
+SingleController.$inject = ['$scope', '$stateParams', '$state', '$http', 'PARSE', 'sweet'];
 
 exports['default'] = SingleController;
 module.exports = exports['default'];
 
-},{"jquery":15}],8:[function(require,module,exports){
+},{"jquery":17}],8:[function(require,module,exports){
 'use strict';
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
@@ -335,6 +354,12 @@ var _angular = require("angular");
 var _angular2 = _interopRequireDefault(_angular);
 
 require('angular-ui-router');
+
+require('angular-foundation');
+
+require('sweetalert');
+
+require('angular-h-sweetalert');
 
 var _config = require('./config');
 
@@ -376,7 +401,7 @@ var _controllersEdit_controller = require('./controllers/edit_controller');
 
 var _controllersEdit_controller2 = _interopRequireDefault(_controllersEdit_controller);
 
-_angular2['default'].module('app', ['ui.router']).constant('PARSE', {
+_angular2['default'].module('app', ['ui.router', 'mm.foundation', 'hSweetAlert']).constant('PARSE', {
   URL: 'https://api.parse.com/1/',
   CONFIG: {
     headers: {
@@ -386,7 +411,7 @@ _angular2['default'].module('app', ['ui.router']).constant('PARSE', {
   }
 }).config(_config2['default']).controller('HomeController', _controllersHome_controller2['default']).controller('RecipeController', _controllersRecipe_controller2['default']).controller('BuildController', _controllersBuild_controller2['default']).controller('SingleController', _controllersSingle_controller2['default']).controller('CalcController', _controllersCalc_controller2['default']).controller('EditController', _controllersEdit_controller2['default']).service('BeerService', _servicesBeer_service2['default']).service('RecipeService', _servicesRecipe_service2['default']).service('BuildService', _servicesBuild_service2['default']);
 
-},{"./config":1,"./controllers/build_controller":2,"./controllers/calc_controller":3,"./controllers/edit_controller":4,"./controllers/home_controller":5,"./controllers/recipe_controller":6,"./controllers/single_controller":7,"./services/beer_service":9,"./services/build_service":10,"./services/recipe_service":11,"angular":14,"angular-ui-router":12,"jquery":15,"moment":16,"underscore":17}],9:[function(require,module,exports){
+},{"./config":1,"./controllers/build_controller":2,"./controllers/calc_controller":3,"./controllers/edit_controller":4,"./controllers/home_controller":5,"./controllers/recipe_controller":6,"./controllers/single_controller":7,"./services/beer_service":9,"./services/build_service":10,"./services/recipe_service":11,"angular":16,"angular-foundation":12,"angular-h-sweetalert":13,"angular-ui-router":14,"jquery":17,"moment":18,"sweetalert":27,"underscore":28}],9:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -432,6 +457,3680 @@ module.exports = exports['default'];
 "use strict";
 
 },{}],12:[function(require,module,exports){
+/*
+ * angular-mm-foundation
+ * http://pineconellc.github.io/angular-foundation/
+
+ * Version: 0.8.0 - 2015-10-13
+ * License: MIT
+ * (c) Pinecone, LLC
+ */
+angular.module("mm.foundation", ["mm.foundation.tpls", "mm.foundation.accordion","mm.foundation.alert","mm.foundation.bindHtml","mm.foundation.buttons","mm.foundation.position","mm.foundation.mediaQueries","mm.foundation.dropdownToggle","mm.foundation.interchange","mm.foundation.transition","mm.foundation.modal","mm.foundation.offcanvas","mm.foundation.pagination","mm.foundation.tooltip","mm.foundation.popover","mm.foundation.progressbar","mm.foundation.rating","mm.foundation.tabs","mm.foundation.topbar","mm.foundation.tour","mm.foundation.typeahead"]);
+angular.module("mm.foundation.tpls", ["template/accordion/accordion-group.html","template/accordion/accordion.html","template/alert/alert.html","template/modal/backdrop.html","template/modal/window.html","template/pagination/pager.html","template/pagination/pagination.html","template/tooltip/tooltip-html-unsafe-popup.html","template/tooltip/tooltip-popup.html","template/popover/popover.html","template/progressbar/bar.html","template/progressbar/progress.html","template/progressbar/progressbar.html","template/rating/rating.html","template/tabs/tab.html","template/tabs/tabset.html","template/topbar/has-dropdown.html","template/topbar/toggle-top-bar.html","template/topbar/top-bar-dropdown.html","template/topbar/top-bar-section.html","template/topbar/top-bar.html","template/tour/tour.html","template/typeahead/typeahead-match.html","template/typeahead/typeahead-popup.html"]);
+angular.module('mm.foundation.accordion', [])
+
+.constant('accordionConfig', {
+  closeOthers: true
+})
+
+.controller('AccordionController', ['$scope', '$attrs', 'accordionConfig', function ($scope, $attrs, accordionConfig) {
+
+  // This array keeps track of the accordion groups
+  this.groups = [];
+
+  // Ensure that all the groups in this accordion are closed, unless close-others explicitly says not to
+  this.closeOthers = function(openGroup) {
+    var closeOthers = angular.isDefined($attrs.closeOthers) ? $scope.$eval($attrs.closeOthers) : accordionConfig.closeOthers;
+    if ( closeOthers ) {
+      angular.forEach(this.groups, function (group) {
+        if ( group !== openGroup ) {
+          group.isOpen = false;
+        }
+      });
+    }
+  };
+  
+  // This is called from the accordion-group directive to add itself to the accordion
+  this.addGroup = function(groupScope) {
+    var that = this;
+    this.groups.push(groupScope);
+
+    groupScope.$on('$destroy', function (event) {
+      that.removeGroup(groupScope);
+    });
+  };
+
+  // This is called from the accordion-group directive when to remove itself
+  this.removeGroup = function(group) {
+    var index = this.groups.indexOf(group);
+    if ( index !== -1 ) {
+      this.groups.splice(index, 1);
+    }
+  };
+
+}])
+
+// The accordion directive simply sets up the directive controller
+// and adds an accordion CSS class to itself element.
+.directive('accordion', function () {
+  return {
+    restrict:'EA',
+    controller:'AccordionController',
+    transclude: true,
+    replace: false,
+    templateUrl: 'template/accordion/accordion.html'
+  };
+})
+
+// The accordion-group directive indicates a block of html that will expand and collapse in an accordion
+.directive('accordionGroup', ['$parse', function($parse) {
+  return {
+    require:'^accordion',         // We need this directive to be inside an accordion
+    restrict:'EA',
+    transclude:true,              // It transcludes the contents of the directive into the template
+    replace: true,                // The element containing the directive will be replaced with the template
+    templateUrl:'template/accordion/accordion-group.html',
+    scope:{ heading:'@' },        // Create an isolated scope and interpolate the heading attribute onto this scope
+    controller: function() {
+      this.setHeading = function(element) {
+        this.heading = element;
+      };
+    },
+    link: function(scope, element, attrs, accordionCtrl) {
+      var getIsOpen, setIsOpen;
+
+      accordionCtrl.addGroup(scope);
+
+      scope.isOpen = false;
+      
+      if ( attrs.isOpen ) {
+        getIsOpen = $parse(attrs.isOpen);
+        setIsOpen = getIsOpen.assign;
+
+        scope.$parent.$watch(getIsOpen, function(value) {
+          scope.isOpen = !!value;
+        });
+      }
+
+      scope.$watch('isOpen', function(value) {
+        if ( value ) {
+          accordionCtrl.closeOthers(scope);
+        }
+        if ( setIsOpen ) {
+          setIsOpen(scope.$parent, value);
+        }
+      });
+    }
+  };
+}])
+
+// Use accordion-heading below an accordion-group to provide a heading containing HTML
+// <accordion-group>
+//   <accordion-heading>Heading containing HTML - <img src="..."></accordion-heading>
+// </accordion-group>
+.directive('accordionHeading', function() {
+  return {
+    restrict: 'EA',
+    transclude: true,   // Grab the contents to be used as the heading
+    template: '',       // In effect remove this element!
+    replace: true,
+    require: '^accordionGroup',
+    compile: function(element, attr, transclude) {
+      return function link(scope, element, attr, accordionGroupCtrl) {
+        // Pass the heading to the accordion-group controller
+        // so that it can be transcluded into the right place in the template
+        // [The second parameter to transclude causes the elements to be cloned so that they work in ng-repeat]
+        accordionGroupCtrl.setHeading(transclude(scope, function() {}));
+      };
+    }
+  };
+})
+
+// Use in the accordion-group template to indicate where you want the heading to be transcluded
+// You must provide the property on the accordion-group controller that will hold the transcluded element
+// <div class="accordion-group">
+//   <div class="accordion-heading" ><a ... accordion-transclude="heading">...</a></div>
+//   ...
+// </div>
+.directive('accordionTransclude', function() {
+  return {
+    require: '^accordionGroup',
+    link: function(scope, element, attr, controller) {
+      scope.$watch(function() { return controller[attr.accordionTransclude]; }, function(heading) {
+        if ( heading ) {
+          element.html('');
+          element.append(heading);
+        }
+      });
+    }
+  };
+});
+
+angular.module("mm.foundation.alert", [])
+
+.controller('AlertController', ['$scope', '$attrs', function ($scope, $attrs) {
+  $scope.closeable = 'close' in $attrs && typeof $attrs.close !== "undefined";
+}])
+
+.directive('alert', function () {
+  return {
+    restrict:'EA',
+    controller:'AlertController',
+    templateUrl:'template/alert/alert.html',
+    transclude:true,
+    replace:true,
+    scope: {
+      type: '=',
+      close: '&'
+    }
+  };
+});
+
+angular.module('mm.foundation.bindHtml', [])
+
+  .directive('bindHtmlUnsafe', function () {
+    return function (scope, element, attr) {
+      element.addClass('ng-binding').data('$binding', attr.bindHtmlUnsafe);
+      scope.$watch(attr.bindHtmlUnsafe, function bindHtmlUnsafeWatchAction(value) {
+        element.html(value || '');
+      });
+    };
+  });
+
+angular.module('mm.foundation.buttons', [])
+
+.constant('buttonConfig', {
+  activeClass: 'active',
+  toggleEvent: 'click'
+})
+
+.controller('ButtonsController', ['buttonConfig', function(buttonConfig) {
+  this.activeClass = buttonConfig.activeClass;
+  this.toggleEvent = buttonConfig.toggleEvent;
+}])
+
+.directive('btnRadio', function () {
+  return {
+    require: ['btnRadio', 'ngModel'],
+    controller: 'ButtonsController',
+    link: function (scope, element, attrs, ctrls) {
+      var buttonsCtrl = ctrls[0], ngModelCtrl = ctrls[1];
+
+      //model -> UI
+      ngModelCtrl.$render = function () {
+        element.toggleClass(buttonsCtrl.activeClass, angular.equals(ngModelCtrl.$modelValue, scope.$eval(attrs.btnRadio)));
+      };
+
+      //ui->model
+      element.bind(buttonsCtrl.toggleEvent, function () {
+        if (!element.hasClass(buttonsCtrl.activeClass)) {
+          scope.$apply(function () {
+            ngModelCtrl.$setViewValue(scope.$eval(attrs.btnRadio));
+            ngModelCtrl.$render();
+          });
+        }
+      });
+    }
+  };
+})
+
+.directive('btnCheckbox', function () {
+  return {
+    require: ['btnCheckbox', 'ngModel'],
+    controller: 'ButtonsController',
+    link: function (scope, element, attrs, ctrls) {
+      var buttonsCtrl = ctrls[0], ngModelCtrl = ctrls[1];
+
+      function getTrueValue() {
+        return getCheckboxValue(attrs.btnCheckboxTrue, true);
+      }
+
+      function getFalseValue() {
+        return getCheckboxValue(attrs.btnCheckboxFalse, false);
+      }
+      
+      function getCheckboxValue(attributeValue, defaultValue) {
+        var val = scope.$eval(attributeValue);
+        return angular.isDefined(val) ? val : defaultValue;
+      }
+
+      //model -> UI
+      ngModelCtrl.$render = function () {
+        element.toggleClass(buttonsCtrl.activeClass, angular.equals(ngModelCtrl.$modelValue, getTrueValue()));
+      };
+
+      //ui->model
+      element.bind(buttonsCtrl.toggleEvent, function () {
+        scope.$apply(function () {
+          ngModelCtrl.$setViewValue(element.hasClass(buttonsCtrl.activeClass) ? getFalseValue() : getTrueValue());
+          ngModelCtrl.$render();
+        });
+      });
+    }
+  };
+});
+
+angular.module('mm.foundation.position', [])
+
+/**
+ * A set of utility methods that can be use to retrieve position of DOM elements.
+ * It is meant to be used where we need to absolute-position DOM elements in
+ * relation to other, existing elements (this is the case for tooltips, popovers,
+ * typeahead suggestions etc.).
+ */
+  .factory('$position', ['$document', '$window', function ($document, $window) {
+
+    function getStyle(el, cssprop) {
+      if (el.currentStyle) { //IE
+        return el.currentStyle[cssprop];
+      } else if ($window.getComputedStyle) {
+        return $window.getComputedStyle(el)[cssprop];
+      }
+      // finally try and get inline style
+      return el.style[cssprop];
+    }
+
+    /**
+     * Checks if a given element is statically positioned
+     * @param element - raw DOM element
+     */
+    function isStaticPositioned(element) {
+      return (getStyle(element, "position") || 'static' ) === 'static';
+    }
+
+    /**
+     * returns the closest, non-statically positioned parentOffset of a given element
+     * @param element
+     */
+    var parentOffsetEl = function (element) {
+      var docDomEl = $document[0];
+      var offsetParent = element.offsetParent || docDomEl;
+      while (offsetParent && offsetParent !== docDomEl && isStaticPositioned(offsetParent) ) {
+        offsetParent = offsetParent.offsetParent;
+      }
+      return offsetParent || docDomEl;
+    };
+
+    return {
+      /**
+       * Provides read-only equivalent of jQuery's position function:
+       * http://api.jquery.com/position/
+       */
+      position: function (element) {
+        var elBCR = this.offset(element);
+        var offsetParentBCR = { top: 0, left: 0 };
+        var offsetParentEl = parentOffsetEl(element[0]);
+        if (offsetParentEl != $document[0]) {
+          offsetParentBCR = this.offset(angular.element(offsetParentEl));
+          offsetParentBCR.top += offsetParentEl.clientTop - offsetParentEl.scrollTop;
+          offsetParentBCR.left += offsetParentEl.clientLeft - offsetParentEl.scrollLeft;
+        }
+
+        var boundingClientRect = element[0].getBoundingClientRect();
+        return {
+          width: boundingClientRect.width || element.prop('offsetWidth'),
+          height: boundingClientRect.height || element.prop('offsetHeight'),
+          top: elBCR.top - offsetParentBCR.top,
+          left: elBCR.left - offsetParentBCR.left
+        };
+      },
+
+      /**
+       * Provides read-only equivalent of jQuery's offset function:
+       * http://api.jquery.com/offset/
+       */
+      offset: function (element) {
+        var boundingClientRect = element[0].getBoundingClientRect();
+        return {
+          width: boundingClientRect.width || element.prop('offsetWidth'),
+          height: boundingClientRect.height || element.prop('offsetHeight'),
+          top: boundingClientRect.top + ($window.pageYOffset || $document[0].body.scrollTop || $document[0].documentElement.scrollTop),
+          left: boundingClientRect.left + ($window.pageXOffset || $document[0].body.scrollLeft  || $document[0].documentElement.scrollLeft)
+        };
+      }
+    };
+  }]);
+
+angular.module("mm.foundation.mediaQueries", [])
+    .factory('matchMedia', ['$document', '$window', function($document, $window) {
+        // MatchMedia for IE <= 9
+        return $window.matchMedia || (function matchMedia(doc, undefined){
+            var bool,
+                docElem = doc.documentElement,
+                refNode = docElem.firstElementChild || docElem.firstChild,
+                // fakeBody required for <FF4 when executed in <head>
+                fakeBody = doc.createElement("body"),
+                div = doc.createElement("div");
+
+            div.id = "mq-test-1";
+            div.style.cssText = "position:absolute;top:-100em";
+            fakeBody.style.background = "none";
+            fakeBody.appendChild(div);
+
+            return function (q) {
+                div.innerHTML = "&shy;<style media=\"" + q + "\"> #mq-test-1 { width: 42px; }</style>";
+                docElem.insertBefore(fakeBody, refNode);
+                bool = div.offsetWidth === 42;
+                docElem.removeChild(fakeBody);
+                return {
+                    matches: bool,
+                    media: q
+                };
+            };
+
+        }($document[0]));
+    }])
+    .factory('mediaQueries', ['$document', 'matchMedia', function($document, matchMedia) {
+        var head = angular.element($document[0].querySelector('head'));
+        head.append('<meta class="foundation-mq-topbar" />');
+        head.append('<meta class="foundation-mq-small" />');
+        head.append('<meta class="foundation-mq-medium" />');
+        head.append('<meta class="foundation-mq-large" />');
+
+        var regex = /^[\/\\'"]+|(;\s?})+|[\/\\'"]+$/g;
+        var queries = {
+            topbar: getComputedStyle(head[0].querySelector('meta.foundation-mq-topbar')).fontFamily.replace(regex, ''),
+            small : getComputedStyle(head[0].querySelector('meta.foundation-mq-small')).fontFamily.replace(regex, ''),
+            medium : getComputedStyle(head[0].querySelector('meta.foundation-mq-medium')).fontFamily.replace(regex, ''),
+            large : getComputedStyle(head[0].querySelector('meta.foundation-mq-large')).fontFamily.replace(regex, '')
+        };
+
+        return {
+            topbarBreakpoint: function () {
+                return !matchMedia(queries.topbar).matches;
+            },
+            small: function () {
+                return matchMedia(queries.small).matches;
+            },
+            medium: function () {
+                return matchMedia(queries.medium).matches;
+            },
+            large: function () {
+                return matchMedia(queries.large).matches;
+            }
+        };
+    }]);
+
+/*
+ * dropdownToggle - Provides dropdown menu functionality
+ * @restrict class or attribute
+ * @example:
+
+   <a dropdown-toggle="#dropdown-menu">My Dropdown Menu</a>
+   <ul id="dropdown-menu" class="f-dropdown">
+     <li ng-repeat="choice in dropChoices">
+       <a ng-href="{{choice.href}}">{{choice.text}}</a>
+     </li>
+   </ul>
+ */
+angular.module('mm.foundation.dropdownToggle', [ 'mm.foundation.position', 'mm.foundation.mediaQueries' ])
+
+.controller('DropdownToggleController', ['$scope', '$attrs', 'mediaQueries', function($scope, $attrs, mediaQueries) {
+  this.small = function() {
+    return mediaQueries.small() && !mediaQueries.medium();
+  };
+}])
+
+.directive('dropdownToggle', ['$document', '$window', '$location', '$position', function ($document, $window, $location, $position) {
+  var openElement = null,
+      closeMenu   = angular.noop;
+  return {
+    restrict: 'CA',
+    controller: 'DropdownToggleController',
+    link: function(scope, element, attrs, controller) {
+      var parent = element.parent(),
+          dropdown = angular.element($document[0].querySelector(attrs.dropdownToggle));
+
+      var parentHasDropdown = function() {
+        return parent.hasClass('has-dropdown');
+      };
+
+      var onClick = function (event) {
+        dropdown = angular.element($document[0].querySelector(attrs.dropdownToggle));
+        var elementWasOpen = (element === openElement);
+
+        event.preventDefault();
+        event.stopPropagation();
+
+        if (!!openElement) {
+          closeMenu();
+        }
+
+        if (!elementWasOpen && !element.hasClass('disabled') && !element.prop('disabled')) {
+          dropdown.css('display', 'block'); // We display the element so that offsetParent is populated
+          dropdown.addClass('f-open-dropdown');
+          
+          var offset = $position.offset(element);
+          var parentOffset = $position.offset(angular.element(dropdown[0].offsetParent));
+          var dropdownWidth = dropdown.prop('offsetWidth');
+          var css = {
+            top: offset.top - parentOffset.top + offset.height + 'px'
+          };
+
+          if (controller.small()) {
+            css.left = Math.max((parentOffset.width - dropdownWidth) / 2, 8) + 'px';
+            css.position = 'absolute';
+            css.width = '95%';
+            css['max-width'] = 'none';
+          }
+          else {
+            var left = Math.round(offset.left - parentOffset.left);
+            var rightThreshold = $window.innerWidth - dropdownWidth - 8;
+            if (left > rightThreshold) {
+                left = rightThreshold;
+                dropdown.removeClass('left').addClass('right');
+            }
+            css.left = left + 'px';
+            css.position = null;
+            css['max-width'] = null;
+          }
+
+          dropdown.css(css);
+          element.addClass('expanded');
+
+          if (parentHasDropdown()) {
+            parent.addClass('hover');
+          }
+
+          openElement = element;
+
+          closeMenu = function (event) {
+            $document.off('click', closeMenu);
+            dropdown.css('display', 'none');
+            dropdown.removeClass('f-open-dropdown');
+            element.removeClass('expanded');
+            closeMenu = angular.noop;
+            openElement = null;
+            if (parent.hasClass('hover')) {
+              parent.removeClass('hover');
+            }
+          };
+          $document.on('click', closeMenu);
+        }
+      };
+
+      if (dropdown) {
+        dropdown.css('display', 'none');
+      }
+
+      scope.$watch('$location.path', function() { closeMenu(); });
+
+      element.on('click', onClick);
+      element.on('$destroy', function() {
+        element.off('click', onClick);
+      });
+    }
+  };
+}]);
+
+/**
+ * @ngdoc service
+ * @name mm.foundation.interchange
+ * @description
+ *
+ * Package containing all services and directives
+ * about the `interchange` module
+ */
+angular.module('mm.foundation.interchange', ['mm.foundation.mediaQueries'])
+
+  /**
+   * @ngdoc function
+   * @name mm.foundation.interchange.interchageQuery
+   * @function interchageQuery
+   * @description
+   *
+   * this service inject meta tags objects in the head
+   * to get the list of media queries from Foundation
+   * stylesheets.
+   *
+   * @return {object} Queries list name => mediaQuery
+   */
+  .factory('interchangeQueries', ['$document', function ($document) {
+    var element,
+      mediaSize,
+      formatList = {
+      'default': 'only screen',
+      landscape : 'only screen and (orientation: landscape)',
+      portrait : 'only screen and (orientation: portrait)',
+      retina : 'only screen and (-webkit-min-device-pixel-ratio: 2),' +
+        'only screen and (min--moz-device-pixel-ratio: 2),' +
+        'only screen and (-o-min-device-pixel-ratio: 2/1),' +
+        'only screen and (min-device-pixel-ratio: 2),' +
+        'only screen and (min-resolution: 192dpi),' +
+        'only screen and (min-resolution: 2dppx)'
+    },
+    classPrefix = 'foundation-mq-',
+    classList = ['small', 'medium', 'large', 'xlarge', 'xxlarge'],
+    head = angular.element($document[0].querySelector('head'));
+
+    for (var i = 0; i < classList.length; i++) {
+      head.append('<meta class="' + classPrefix + classList[i] + '" />');
+      element = getComputedStyle(head[0].querySelector('meta.' + classPrefix + classList[i]));
+      mediaSize = element.fontFamily.replace(/^[\/\\'"]+|(;\s?})+|[\/\\'"]+$/g, '');
+      formatList[classList[i]] = mediaSize;
+    }
+    return formatList;
+  }])
+
+  /**
+   * @ngdoc function
+   * @name mm.foundation.interchange.interchangeQueriesManager
+   * @function interchangeQueriesManager
+   * @description
+   *
+   * interface to add and remove named queries
+   * in the interchangeQueries list
+   */
+  .factory('interchangeQueriesManager', ['interchangeQueries', function (interchangeQueries) {
+    return {
+      /**
+       * @ngdoc method
+       * @name interchangeQueriesManager#add
+       * @methodOf mm.foundation.interchange.interchangeQueriesManager
+       * @description
+       *
+       * Add a custom media query in the `interchangeQueries`
+       * factory. This method does not allow to update an existing
+       * media query.
+       *
+       * @param {string} name MediaQuery name
+       * @param {string} media MediaQuery
+       * @returns {boolean} True if the insert is a success
+       */
+      add: function (name, media) {
+        if (!name || !media ||
+          !angular.isString(name) || !angular.isString(media) ||
+          !!interchangeQueries[name]) {
+          return false;
+        }
+        interchangeQueries[name] = media;
+        return true;
+      }
+    };
+  }])
+
+  /**
+   * @ngdoc function
+   * @name mm.foundation.interchange.interchangeTools
+   * @function interchangeTools
+   * @description
+   *
+   * Tools to help with the `interchange` module.
+   */
+  .factory('interchangeTools', ['$window', 'matchMedia', 'interchangeQueries', function ($window, matchMedia, namedQueries) {
+
+    /**
+     * @ngdoc method
+     * @name interchangeTools#parseAttribute
+     * @methodOf mm.foundation.interchange.interchangeTools
+     * @description
+     *
+     * Attribute parser to transform an `interchange` attribute
+     * value to an object with media query (name or query) as key,
+     * and file to use as value.
+     *
+     * ```
+     * {
+     *   small: 'bridge-500.jpg',
+     *   large: 'bridge-1200.jpg'
+     * }
+     * ```
+     *
+     * @param {string} value Interchange query string
+     * @returns {object} Attribute parsed
+     */
+    var parseAttribute = function (value) {
+      var raw = value.split(/\[(.*?)\]/),
+        i = raw.length,
+        breaker = /^(.+)\,\ \((.+)\)$/,
+        breaked,
+        output = {};
+
+      while (i--) {
+        if (raw[i].replace(/[\W\d]+/, '').length > 4) {
+          breaked = breaker.exec(raw[i]);
+          if (!!breaked && breaked.length === 3) {
+            output[breaked[2]] = breaked[1];
+          }
+        }
+      }
+      return output;
+    };
+
+    /**
+     * @ngdoc method
+     * @name interchangeTools#findCurrentMediaFile
+     * @methodOf mm.foundation.interchange.interchangeTools
+     * @description
+     *
+     * Find the current item to display from a file list
+     * (object returned by `parseAttribute`) and the
+     * current page dimensions.
+     *
+     * ```
+     * {
+     *   small: 'bridge-500.jpg',
+     *   large: 'bridge-1200.jpg'
+     * }
+     * ```
+     *
+     * @param {object} files Parsed version of `interchange` attribute
+     * @returns {string} File to display (or `undefined`)
+     */
+    var findCurrentMediaFile = function (files) {
+      var file, media, match;
+      for (file in files) {
+        media = namedQueries[file] || file;
+        match = matchMedia(media);
+        if (match.matches) {
+          return files[file];
+        }
+      }
+      return;
+    };
+
+    return {
+      parseAttribute: parseAttribute,
+      findCurrentMediaFile: findCurrentMediaFile
+    };
+  }])
+
+  /**
+   * @ngdoc directive
+   * @name mm.foundation.interchange.directive:interchange
+   * @restrict A
+   * @element DIV|IMG
+   * @priority 450
+   * @scope true
+   * @description
+   *
+   * Interchange directive, following the same features as
+   * ZURB documentation. The directive is splitted in 3 parts.
+   *
+   * 1. This directive use `compile` and not `link` for a simple
+   * reason: if the method is applied on a DIV element to
+   * display a template, the compile method will inject an ng-include.
+   * Because using a `templateUrl` or `template` to do it wouldn't
+   * be appropriate for all cases (`IMG` or dynamic backgrounds).
+   * And doing it in `link` is too late to be applied.
+   *
+   * 2. In the `compile:post`, the attribute is parsed to find
+   * out the type of content to display.
+   *
+   * 3. At the start and on event `resize`, the method `replace`
+   * is called to reevaluate which file is supposed to be displayed
+   * and update the value if necessary. The methd will also
+   * trigger a `replace` event.
+   */
+  .directive('interchange', ['$window', '$rootScope', 'interchangeTools', function ($window, $rootScope, interchangeTools) {
+
+    var pictureFilePattern = /[A-Za-z0-9-_]+\.(jpg|jpeg|png|gif|bmp|tiff)\ *,/i;
+
+    return {
+      restrict: 'A',
+      scope: true,
+      priority: 450,
+      compile: function compile($element, attrs) {
+        // Set up the attribute to update
+        if ($element[0].nodeName === 'DIV' && !pictureFilePattern.test(attrs.interchange)) {
+          $element.html('<ng-include src="currentFile"></ng-include>');
+        }
+
+        return {
+          pre: function preLink($scope, $element, attrs) {},
+          post: function postLink($scope, $element, attrs) {
+            var currentFile, nodeName;
+
+            // Set up the attribute to update
+            nodeName = $element && $element[0] && $element[0].nodeName;
+            $scope.fileMap = interchangeTools.parseAttribute(attrs.interchange);
+
+            // Find the type of interchange
+            switch (nodeName) {
+            case 'DIV':
+              // If the tag is a div, we test the current file to see if it's picture
+              currentFile = interchangeTools.findCurrentMediaFile($scope.fileMap);
+              if (/[A-Za-z0-9-_]+\.(jpg|jpeg|png|gif|bmp|tiff)$/i.test(currentFile)) {
+                $scope.type = 'background';
+              }
+              else {
+                $scope.type = 'include';
+              }
+              break;
+
+            case 'IMG':
+              $scope.type = 'image';
+              break;
+
+            default:
+              return;
+            }
+
+            var replace = function (e) {
+              // The the new file to display (exit if the same)
+              var currentFile = interchangeTools.findCurrentMediaFile($scope.fileMap);
+              if (!!$scope.currentFile && $scope.currentFile === currentFile) {
+                return;
+              }
+
+              // Set up the new file
+              $scope.currentFile = currentFile;
+              switch ($scope.type) {
+              case 'image':
+                $element.attr('src', $scope.currentFile);
+                break;
+
+              case 'background':
+                $element.css('background-image', 'url(' + $scope.currentFile + ')');
+                break;
+              }
+
+              // Trigger events
+              $rootScope.$emit('replace', $element, $scope);
+              if (!!e) {
+                $scope.$apply();
+              }
+            };
+
+            // Start
+            replace();
+            $window.addEventListener('resize', replace);
+            $scope.$on('$destroy', function () {
+              $window.removeEventListener('resize', replace);
+            });
+          }
+        };
+      }
+    };
+  }]);
+
+angular.module('mm.foundation.transition', [])
+
+/**
+ * $transition service provides a consistent interface to trigger CSS 3 transitions and to be informed when they complete.
+ * @param  {DOMElement} element  The DOMElement that will be animated.
+ * @param  {string|object|function} trigger  The thing that will cause the transition to start:
+ *   - As a string, it represents the css class to be added to the element.
+ *   - As an object, it represents a hash of style attributes to be applied to the element.
+ *   - As a function, it represents a function to be called that will cause the transition to occur.
+ * @return {Promise}  A promise that is resolved when the transition finishes.
+ */
+.factory('$transition', ['$q', '$timeout', '$rootScope', function($q, $timeout, $rootScope) {
+
+  var $transition = function(element, trigger, options) {
+    options = options || {};
+    var deferred = $q.defer();
+    var endEventName = $transition[options.animation ? "animationEndEventName" : "transitionEndEventName"];
+
+    var transitionEndHandler = function(event) {
+      $rootScope.$apply(function() {
+        element.unbind(endEventName, transitionEndHandler);
+        deferred.resolve(element);
+      });
+    };
+
+    if (endEventName) {
+      element.bind(endEventName, transitionEndHandler);
+    }
+
+    // Wrap in a timeout to allow the browser time to update the DOM before the transition is to occur
+    $timeout(function() {
+      if ( angular.isString(trigger) ) {
+        element.addClass(trigger);
+      } else if ( angular.isFunction(trigger) ) {
+        trigger(element);
+      } else if ( angular.isObject(trigger) ) {
+        element.css(trigger);
+      }
+      //If browser does not support transitions, instantly resolve
+      if ( !endEventName ) {
+        deferred.resolve(element);
+      }
+    });
+
+    // Add our custom cancel function to the promise that is returned
+    // We can call this if we are about to run a new transition, which we know will prevent this transition from ending,
+    // i.e. it will therefore never raise a transitionEnd event for that transition
+    deferred.promise.cancel = function() {
+      if ( endEventName ) {
+        element.unbind(endEventName, transitionEndHandler);
+      }
+      deferred.reject('Transition cancelled');
+    };
+
+    return deferred.promise;
+  };
+
+  // Work out the name of the transitionEnd event
+  var transElement = document.createElement('trans');
+  var transitionEndEventNames = {
+    'WebkitTransition': 'webkitTransitionEnd',
+    'MozTransition': 'transitionend',
+    'OTransition': 'oTransitionEnd',
+    'transition': 'transitionend'
+  };
+  var animationEndEventNames = {
+    'WebkitTransition': 'webkitAnimationEnd',
+    'MozTransition': 'animationend',
+    'OTransition': 'oAnimationEnd',
+    'transition': 'animationend'
+  };
+  function findEndEventName(endEventNames) {
+    for (var name in endEventNames){
+      if (transElement.style[name] !== undefined) {
+        return endEventNames[name];
+      }
+    }
+  }
+  $transition.transitionEndEventName = findEndEventName(transitionEndEventNames);
+  $transition.animationEndEventName = findEndEventName(animationEndEventNames);
+  return $transition;
+}]);
+
+angular.module('mm.foundation.modal', ['mm.foundation.transition'])
+
+/**
+ * A helper, internal data structure that acts as a map but also allows getting / removing
+ * elements in the LIFO order
+ */
+  .factory('$$stackedMap', function () {
+    return {
+      createNew: function () {
+        var stack = [];
+
+        return {
+          add: function (key, value) {
+            stack.push({
+              key: key,
+              value: value
+            });
+          },
+          get: function (key) {
+            for (var i = 0; i < stack.length; i++) {
+              if (key == stack[i].key) {
+                return stack[i];
+              }
+            }
+          },
+          keys: function() {
+            var keys = [];
+            for (var i = 0; i < stack.length; i++) {
+              keys.push(stack[i].key);
+            }
+            return keys;
+          },
+          top: function () {
+            return stack[stack.length - 1];
+          },
+          remove: function (key) {
+            var idx = -1;
+            for (var i = 0; i < stack.length; i++) {
+              if (key == stack[i].key) {
+                idx = i;
+                break;
+              }
+            }
+            return stack.splice(idx, 1)[0];
+          },
+          removeTop: function () {
+            return stack.splice(stack.length - 1, 1)[0];
+          },
+          length: function () {
+            return stack.length;
+          }
+        };
+      }
+    };
+  })
+
+/**
+ * A helper directive for the $modal service. It creates a backdrop element.
+ */
+  .directive('modalBackdrop', ['$modalStack', '$timeout', function ($modalStack, $timeout) {
+    return {
+      restrict: 'EA',
+      replace: true,
+      templateUrl: 'template/modal/backdrop.html',
+      link: function (scope) {
+
+        scope.animate = false;
+
+        //trigger CSS transitions
+        $timeout(function () {
+          scope.animate = true;
+        });
+
+        scope.close = function (evt) {
+          var modal = $modalStack.getTop();
+          if (modal && modal.value.backdrop && modal.value.backdrop != 'static' && (evt.target === evt.currentTarget)) {
+            evt.preventDefault();
+            evt.stopPropagation();
+            $modalStack.dismiss(modal.key, 'backdrop click');
+          }
+        };
+      }
+    };
+  }])
+
+  .directive('modalWindow', ['$modalStack', '$timeout', function ($modalStack, $timeout) {
+    return {
+      restrict: 'EA',
+      scope: {
+        index: '@',
+        animate: '='
+      },
+      replace: true,
+      transclude: true,
+      templateUrl: 'template/modal/window.html',
+      link: function (scope, element, attrs) {
+        scope.windowClass = attrs.windowClass || '';
+
+        $timeout(function () {
+          // trigger CSS transitions
+          scope.animate = true;
+
+          // If the modal contains any autofocus elements refocus onto the first one
+          if (element[0].querySelectorAll('[autofocus]').length > 0) {
+            element[0].querySelectorAll('[autofocus]')[0].focus();
+          }
+          else{
+          // otherwise focus the freshly-opened modal
+            element[0].focus();
+          }
+        });
+      }
+    };
+  }])
+
+  .factory('$modalStack', ['$window', '$transition', '$timeout', '$document', '$compile', '$rootScope', '$$stackedMap',
+    function ($window, $transition, $timeout, $document, $compile, $rootScope, $$stackedMap) {
+
+      var OPENED_MODAL_CLASS = 'modal-open';
+
+      var backdropDomEl, backdropScope, cssTop;
+      var openedWindows = $$stackedMap.createNew();
+      var $modalStack = {};
+
+      function backdropIndex() {
+        var topBackdropIndex = -1;
+        var opened = openedWindows.keys();
+        for (var i = 0; i < opened.length; i++) {
+          if (openedWindows.get(opened[i]).value.backdrop) {
+            topBackdropIndex = i;
+          }
+        }
+        return topBackdropIndex;
+      }
+
+      $rootScope.$watch(backdropIndex, function(newBackdropIndex){
+        if (backdropScope) {
+          backdropScope.index = newBackdropIndex;
+        }
+      });
+
+      function removeModalWindow(modalInstance) {
+        var parent = $document.find(modalInstance.options.parent).eq(0);
+        var modalWindow = openedWindows.get(modalInstance).value;
+
+        //clean up the stack
+        openedWindows.remove(modalInstance);
+
+        //remove window DOM element
+        removeAfterAnimate(modalWindow.modalDomEl, modalWindow.modalScope, 300, function() {
+          modalWindow.modalScope.$destroy();
+          parent.toggleClass(OPENED_MODAL_CLASS, openedWindows.length() > 0);
+          checkRemoveBackdrop();
+        });
+      }
+
+      function checkRemoveBackdrop() {
+          //remove backdrop if no longer needed
+          if (backdropDomEl && backdropIndex() == -1) {
+            var backdropScopeRef = backdropScope;
+            removeAfterAnimate(backdropDomEl, backdropScope, 150, function () {
+              backdropScopeRef.$destroy();
+              backdropScopeRef = null;
+            });
+            backdropDomEl = undefined;
+            backdropScope = undefined;
+          }
+      }
+
+      function removeAfterAnimate(domEl, scope, emulateTime, done) {
+        // Closing animation
+        scope.animate = false;
+
+        var transitionEndEventName = $transition.transitionEndEventName;
+        if (transitionEndEventName) {
+          // transition out
+          var timeout = $timeout(afterAnimating, emulateTime);
+
+          domEl.bind(transitionEndEventName, function () {
+            $timeout.cancel(timeout);
+            afterAnimating();
+            scope.$apply();
+          });
+        } else {
+          // Ensure this call is async
+          $timeout(afterAnimating, 0);
+        }
+
+        function afterAnimating() {
+          if (afterAnimating.done) {
+            return;
+          }
+          afterAnimating.done = true;
+
+          domEl.remove();
+          if (done) {
+            done();
+          }
+        }
+      }
+
+      function calculateModalTop(modalElement, offset) {
+        if (angular.isUndefined(offset)) {
+          offset = 0;
+        }
+        var scrollY = $window.pageYOffset || 0;
+        return offset + scrollY;
+      }
+
+      $document.bind('keydown', function (evt) {
+        var modal;
+
+        if (evt.which === 27) {
+          modal = openedWindows.top();
+          if (modal && modal.value.keyboard) {
+            $rootScope.$apply(function () {
+              $modalStack.dismiss(modal.key);
+            });
+          }
+        }
+      });
+
+      $modalStack.open = function (modalInstance, modal) {
+        modalInstance.options = {
+          deferred: modal.deferred,
+          modalScope: modal.scope,
+          backdrop: modal.backdrop,
+          keyboard: modal.keyboard,
+          parent: modal.parent
+        };
+        openedWindows.add(modalInstance, modalInstance.options);
+
+        var parent = $document.find(modal.parent).eq(0),
+            currBackdropIndex = backdropIndex();
+
+        if (currBackdropIndex >= 0 && !backdropDomEl) {
+          backdropScope = $rootScope.$new(true);
+          backdropScope.index = currBackdropIndex;
+          backdropDomEl = $compile('<div modal-backdrop></div>')(backdropScope);
+          parent.append(backdropDomEl);
+        }
+
+        // Create a faux modal div just to measure its
+        // distance to top
+        var faux = angular.element('<div class="reveal-modal" style="z-index:-1""></div>');
+        parent.append(faux[0]);
+        cssTop = parseInt($window.getComputedStyle(faux[0]).top) || 0;
+        var openAt = calculateModalTop(faux, cssTop);
+        faux.remove();
+
+        var angularDomEl = angular.element('<div modal-window style="visibility: visible; top:' + openAt +'px;"></div>')
+          .attr({
+            'window-class': modal.windowClass,
+            'index': openedWindows.length() - 1,
+            'animate': 'animate'
+          });
+        angularDomEl.html(modal.content);
+
+        var modalDomEl = $compile(angularDomEl)(modal.scope);
+        openedWindows.top().value.modalDomEl = modalDomEl;
+        parent.append(modalDomEl);
+        parent.addClass(OPENED_MODAL_CLASS);
+      };
+
+      $modalStack.reposition = function (modalInstance) {
+        var modalWindow = openedWindows.get(modalInstance).value;
+        if (modalWindow) {
+          var modalDomEl = modalWindow.modalDomEl;
+          var top = calculateModalTop(modalDomEl, cssTop);
+          modalDomEl.css('top', top + "px");
+        }
+      };
+
+      $modalStack.close = function (modalInstance, result) {
+        var modalWindow = openedWindows.get(modalInstance);
+        if (modalWindow) {
+          modalWindow.value.deferred.resolve(result);
+          removeModalWindow(modalInstance);
+        }
+      };
+
+      $modalStack.dismiss = function (modalInstance, reason) {
+        var modalWindow = openedWindows.get(modalInstance);
+        if (modalWindow) {
+          modalWindow.value.deferred.reject(reason);
+          removeModalWindow(modalInstance);
+        }
+      };
+
+      $modalStack.dismissAll = function (reason) {
+        var topModal = this.getTop();
+        while (topModal) {
+          this.dismiss(topModal.key, reason);
+          topModal = this.getTop();
+        }
+      };
+
+      $modalStack.getTop = function () {
+        return openedWindows.top();
+      };
+
+      return $modalStack;
+    }])
+
+  .provider('$modal', function () {
+
+    var $modalProvider = {
+      options: {
+        backdrop: true, //can be also false or 'static'
+        keyboard: true
+      },
+      $get: ['$injector', '$rootScope', '$q', '$http', '$templateCache', '$controller', '$modalStack',
+        function ($injector, $rootScope, $q, $http, $templateCache, $controller, $modalStack) {
+
+          var $modal = {};
+
+          function getTemplatePromise(options) {
+            return options.template ? $q.when(options.template) :
+              $http.get(options.templateUrl, {cache: $templateCache}).then(function (result) {
+                return result.data;
+              });
+          }
+
+          function getResolvePromises(resolves) {
+            var promisesArr = [];
+            angular.forEach(resolves, function (value, key) {
+              if (angular.isFunction(value) || angular.isArray(value)) {
+                promisesArr.push($q.when($injector.invoke(value)));
+              }
+            });
+            return promisesArr;
+          }
+
+          $modal.open = function (modalOptions) {
+
+            var modalResultDeferred = $q.defer();
+            var modalOpenedDeferred = $q.defer();
+
+            //prepare an instance of a modal to be injected into controllers and returned to a caller
+            var modalInstance = {
+              result: modalResultDeferred.promise,
+              opened: modalOpenedDeferred.promise,
+              close: function (result) {
+                $modalStack.close(modalInstance, result);
+              },
+              dismiss: function (reason) {
+                $modalStack.dismiss(modalInstance, reason);
+              },
+              reposition: function () {
+                $modalStack.reposition(modalInstance);
+              }
+            };
+
+            //merge and clean up options
+            modalOptions = angular.extend({}, $modalProvider.options, modalOptions);
+            modalOptions.resolve = modalOptions.resolve || {};
+
+            //verify options
+            if (!modalOptions.template && !modalOptions.templateUrl) {
+              throw new Error('One of template or templateUrl options is required.');
+            }
+
+            var templateAndResolvePromise =
+              $q.all([getTemplatePromise(modalOptions)].concat(getResolvePromises(modalOptions.resolve)));
+
+
+            templateAndResolvePromise.then(function resolveSuccess(tplAndVars) {
+
+              var modalScope = (modalOptions.scope || $rootScope).$new();
+              modalScope.$close = modalInstance.close;
+              modalScope.$dismiss = modalInstance.dismiss;
+
+              var ctrlInstance, ctrlLocals = {};
+              var resolveIter = 1;
+
+              //controllers
+              if (modalOptions.controller) {
+                ctrlLocals.$scope = modalScope;
+                ctrlLocals.$modalInstance = modalInstance;
+                angular.forEach(modalOptions.resolve, function (value, key) {
+                  ctrlLocals[key] = tplAndVars[resolveIter++];
+                });
+
+                ctrlInstance = $controller(modalOptions.controller, ctrlLocals);
+                if (modalOptions.controllerAs) {
+                  modalScope[modalOptions.controllerAs] = ctrlInstance;
+                }
+              }
+
+              $modalStack.open(modalInstance, {
+                scope: modalScope,
+                deferred: modalResultDeferred,
+                content: tplAndVars[0],
+                backdrop: modalOptions.backdrop,
+                keyboard: modalOptions.keyboard,
+                windowClass: modalOptions.windowClass,
+                parent: modalOptions.parent || 'body'
+              });
+
+            }, function resolveError(reason) {
+              modalResultDeferred.reject(reason);
+            });
+
+            templateAndResolvePromise.then(function () {
+              modalOpenedDeferred.resolve(true);
+            }, function () {
+              modalOpenedDeferred.reject(false);
+            });
+
+            return modalInstance;
+          };
+
+          return $modal;
+        }]
+    };
+
+    return $modalProvider;
+  });
+
+angular.module("mm.foundation.offcanvas", [])
+    .directive('offCanvasWrap', ['$window', function ($window) {
+        return {
+            scope: {},
+            restrict: 'C',
+            link: function ($scope, element, attrs) {
+                var win = angular.element($window);
+                var sidebar = $scope.sidebar = element;
+
+                $scope.hide = function () {
+                    sidebar.removeClass('move-left');
+                    sidebar.removeClass('move-right');
+                };
+
+                win.bind("resize.body", $scope.hide);
+
+                $scope.$on('$destroy', function() {
+                    win.unbind("resize.body", $scope.hide);
+                });
+
+            },
+            controller: ['$scope', function($scope) {
+
+                this.leftToggle = function() {
+                    $scope.sidebar.toggleClass("move-right");
+                };
+
+                this.rightToggle = function() {
+                    $scope.sidebar.toggleClass("move-left");
+                };
+
+                this.hide = function() {
+                    $scope.hide();
+                };
+            }]
+        };
+    }])
+    .directive('leftOffCanvasToggle', [function () {
+        return {
+            require: '^offCanvasWrap',
+            restrict: 'C',
+            link: function ($scope, element, attrs, offCanvasWrap) {
+                element.on('click', function () {
+                    offCanvasWrap.leftToggle();
+                });
+            }
+        };
+    }])
+    .directive('rightOffCanvasToggle', [function () {
+        return {
+            require: '^offCanvasWrap',
+            restrict: 'C',
+            link: function ($scope, element, attrs, offCanvasWrap) {
+                element.on('click', function () {
+                    offCanvasWrap.rightToggle();
+                });
+            }
+        };
+    }])
+       .directive('exitOffCanvas', [function () {
+        return {
+            require: '^offCanvasWrap',
+            restrict: 'C',
+            link: function ($scope, element, attrs, offCanvasWrap) {
+                element.on('click', function () {
+                    offCanvasWrap.hide();
+                });
+            }
+        };
+    }])
+    .directive('offCanvasList', [function () {
+        return {
+            require: '^offCanvasWrap',
+            restrict: 'C',
+            link: function ($scope, element, attrs, offCanvasWrap) {
+                element.on('click', function () {
+                    offCanvasWrap.hide();
+                });
+            }
+        };
+    }]);
+
+angular.module('mm.foundation.pagination', [])
+
+.controller('PaginationController', ['$scope', '$attrs', '$parse', '$interpolate', function ($scope, $attrs, $parse, $interpolate) {
+  var self = this,
+      setNumPages = $attrs.numPages ? $parse($attrs.numPages).assign : angular.noop;
+
+  this.init = function(defaultItemsPerPage) {
+    if ($attrs.itemsPerPage) {
+      $scope.$parent.$watch($parse($attrs.itemsPerPage), function(value) {
+        self.itemsPerPage = parseInt(value, 10);
+        $scope.totalPages = self.calculateTotalPages();
+      });
+    } else {
+      this.itemsPerPage = defaultItemsPerPage;
+    }
+  };
+
+  this.noPrevious = function() {
+    return this.page === 1;
+  };
+  this.noNext = function() {
+    return this.page === $scope.totalPages;
+  };
+
+  this.isActive = function(page) {
+    return this.page === page;
+  };
+
+  this.calculateTotalPages = function() {
+    var totalPages = this.itemsPerPage < 1 ? 1 : Math.ceil($scope.totalItems / this.itemsPerPage);
+    return Math.max(totalPages || 0, 1);
+  };
+
+  this.getAttributeValue = function(attribute, defaultValue, interpolate) {
+    return angular.isDefined(attribute) ? (interpolate ? $interpolate(attribute)($scope.$parent) : $scope.$parent.$eval(attribute)) : defaultValue;
+  };
+
+  this.render = function() {
+    this.page = parseInt($scope.page, 10) || 1;
+    if (this.page > 0 && this.page <= $scope.totalPages) {
+      $scope.pages = this.getPages(this.page, $scope.totalPages);
+    }
+  };
+
+  $scope.selectPage = function(page) {
+    if ( ! self.isActive(page) && page > 0 && page <= $scope.totalPages) {
+      $scope.page = page;
+      $scope.onSelectPage({ page: page });
+    }
+  };
+
+  $scope.$watch('page', function() {
+    self.render();
+  });
+
+  $scope.$watch('totalItems', function() {
+    $scope.totalPages = self.calculateTotalPages();
+  });
+
+  $scope.$watch('totalPages', function(value) {
+    setNumPages($scope.$parent, value); // Readonly variable
+
+    if ( self.page > value ) {
+      $scope.selectPage(value);
+    } else {
+      self.render();
+    }
+  });
+}])
+
+.constant('paginationConfig', {
+  itemsPerPage: 10,
+  boundaryLinks: false,
+  directionLinks: true,
+  firstText: 'First',
+  previousText: 'Previous',
+  nextText: 'Next',
+  lastText: 'Last',
+  rotate: true
+})
+
+.directive('pagination', ['$parse', 'paginationConfig', function($parse, config) {
+  return {
+    restrict: 'EA',
+    scope: {
+      page: '=',
+      totalItems: '=',
+      onSelectPage:' &'
+    },
+    controller: 'PaginationController',
+    templateUrl: 'template/pagination/pagination.html',
+    replace: true,
+    link: function(scope, element, attrs, paginationCtrl) {
+
+      // Setup configuration parameters
+      var maxSize,
+      boundaryLinks  = paginationCtrl.getAttributeValue(attrs.boundaryLinks,  config.boundaryLinks      ),
+      directionLinks = paginationCtrl.getAttributeValue(attrs.directionLinks, config.directionLinks     ),
+      firstText      = paginationCtrl.getAttributeValue(attrs.firstText,      config.firstText,     true),
+      previousText   = paginationCtrl.getAttributeValue(attrs.previousText,   config.previousText,  true),
+      nextText       = paginationCtrl.getAttributeValue(attrs.nextText,       config.nextText,      true),
+      lastText       = paginationCtrl.getAttributeValue(attrs.lastText,       config.lastText,      true),
+      rotate         = paginationCtrl.getAttributeValue(attrs.rotate,         config.rotate);
+
+      paginationCtrl.init(config.itemsPerPage);
+
+      if (attrs.maxSize) {
+        scope.$parent.$watch($parse(attrs.maxSize), function(value) {
+          maxSize = parseInt(value, 10);
+          paginationCtrl.render();
+        });
+      }
+
+      // Create page object used in template
+      function makePage(number, text, isActive, isDisabled) {
+        return {
+          number: number,
+          text: text,
+          active: isActive,
+          disabled: isDisabled
+        };
+      }
+
+      paginationCtrl.getPages = function(currentPage, totalPages) {
+        var pages = [];
+
+        // Default page limits
+        var startPage = 1, endPage = totalPages;
+        var isMaxSized = ( angular.isDefined(maxSize) && maxSize < totalPages );
+
+        // recompute if maxSize
+        if ( isMaxSized ) {
+          if ( rotate ) {
+            // Current page is displayed in the middle of the visible ones
+            startPage = Math.max(currentPage - Math.floor(maxSize/2), 1);
+            endPage   = startPage + maxSize - 1;
+
+            // Adjust if limit is exceeded
+            if (endPage > totalPages) {
+              endPage   = totalPages;
+              startPage = endPage - maxSize + 1;
+            }
+          } else {
+            // Visible pages are paginated with maxSize
+            startPage = ((Math.ceil(currentPage / maxSize) - 1) * maxSize) + 1;
+
+            // Adjust last page if limit is exceeded
+            endPage = Math.min(startPage + maxSize - 1, totalPages);
+          }
+        }
+
+        // Add page number links
+        for (var number = startPage; number <= endPage; number++) {
+          var page = makePage(number, number, paginationCtrl.isActive(number), false);
+          pages.push(page);
+        }
+
+        // Add links to move between page sets
+        if ( isMaxSized && ! rotate ) {
+          if ( startPage > 1 ) {
+            var previousPageSet = makePage(startPage - 1, '...', false, false);
+            pages.unshift(previousPageSet);
+          }
+
+          if ( endPage < totalPages ) {
+            var nextPageSet = makePage(endPage + 1, '...', false, false);
+            pages.push(nextPageSet);
+          }
+        }
+
+        // Add previous & next links
+        if (directionLinks) {
+          var previousPage = makePage(currentPage - 1, previousText, false, paginationCtrl.noPrevious());
+          pages.unshift(previousPage);
+
+          var nextPage = makePage(currentPage + 1, nextText, false, paginationCtrl.noNext());
+          pages.push(nextPage);
+        }
+
+        // Add first & last links
+        if (boundaryLinks) {
+          var firstPage = makePage(1, firstText, false, paginationCtrl.noPrevious());
+          pages.unshift(firstPage);
+
+          var lastPage = makePage(totalPages, lastText, false, paginationCtrl.noNext());
+          pages.push(lastPage);
+        }
+
+        return pages;
+      };
+    }
+  };
+}])
+
+.constant('pagerConfig', {
+  itemsPerPage: 10,
+  previousText: '« Previous',
+  nextText: 'Next »',
+  align: true
+})
+
+.directive('pager', ['pagerConfig', function(config) {
+  return {
+    restrict: 'EA',
+    scope: {
+      page: '=',
+      totalItems: '=',
+      onSelectPage:' &'
+    },
+    controller: 'PaginationController',
+    templateUrl: 'template/pagination/pager.html',
+    replace: true,
+    link: function(scope, element, attrs, paginationCtrl) {
+
+      // Setup configuration parameters
+      var previousText = paginationCtrl.getAttributeValue(attrs.previousText, config.previousText, true),
+      nextText         = paginationCtrl.getAttributeValue(attrs.nextText,     config.nextText,     true),
+      align            = paginationCtrl.getAttributeValue(attrs.align,        config.align);
+
+      paginationCtrl.init(config.itemsPerPage);
+
+      // Create page object used in template
+      function makePage(number, text, isDisabled, isPrevious, isNext) {
+        return {
+          number: number,
+          text: text,
+          disabled: isDisabled,
+          previous: ( align && isPrevious ),
+          next: ( align && isNext )
+        };
+      }
+
+      paginationCtrl.getPages = function(currentPage) {
+        return [
+          makePage(currentPage - 1, previousText, paginationCtrl.noPrevious(), true, false),
+          makePage(currentPage + 1, nextText, paginationCtrl.noNext(), false, true)
+        ];
+      };
+    }
+  };
+}]);
+
+/**
+ * The following features are still outstanding: animation as a
+ * function, placement as a function, inside, support for more triggers than
+ * just mouse enter/leave, html tooltips, and selector delegation.
+ */
+angular.module( 'mm.foundation.tooltip', [ 'mm.foundation.position', 'mm.foundation.bindHtml' ] )
+
+/**
+ * The $tooltip service creates tooltip- and popover-like directives as well as
+ * houses global options for them.
+ */
+.provider( '$tooltip', function () {
+  // The default options tooltip and popover.
+  var defaultOptions = {
+    placement: 'top',
+    animation: true,
+    popupDelay: 0
+  };
+
+  // Default hide triggers for each show trigger
+  var triggerMap = {
+    'mouseenter': 'mouseleave',
+    'click': 'click',
+    'focus': 'blur'
+  };
+
+  // The options specified to the provider globally.
+  var globalOptions = {};
+  
+  /**
+   * `options({})` allows global configuration of all tooltips in the
+   * application.
+   *
+   *   var app = angular.module( 'App', ['mm.foundation.tooltip'], function( $tooltipProvider ) {
+   *     // place tooltips left instead of top by default
+   *     $tooltipProvider.options( { placement: 'left' } );
+   *   });
+   */
+	this.options = function( value ) {
+		angular.extend( globalOptions, value );
+	};
+
+  /**
+   * This allows you to extend the set of trigger mappings available. E.g.:
+   *
+   *   $tooltipProvider.setTriggers( 'openTrigger': 'closeTrigger' );
+   */
+  this.setTriggers = function setTriggers ( triggers ) {
+    angular.extend( triggerMap, triggers );
+  };
+
+  /**
+   * This is a helper function for translating camel-case to snake-case.
+   */
+  function snake_case(name){
+    var regexp = /[A-Z]/g;
+    var separator = '-';
+    return name.replace(regexp, function(letter, pos) {
+      return (pos ? separator : '') + letter.toLowerCase();
+    });
+  }
+
+  /**
+   * Returns the actual instance of the $tooltip service.
+   * TODO support multiple triggers
+   */
+  this.$get = [ '$window', '$compile', '$timeout', '$parse', '$document', '$position', '$interpolate', function ( $window, $compile, $timeout, $parse, $document, $position, $interpolate ) {
+    return function $tooltip ( type, prefix, defaultTriggerShow ) {
+      var options = angular.extend( {}, defaultOptions, globalOptions );
+
+      /**
+       * Returns an object of show and hide triggers.
+       *
+       * If a trigger is supplied,
+       * it is used to show the tooltip; otherwise, it will use the `trigger`
+       * option passed to the `$tooltipProvider.options` method; else it will
+       * default to the trigger supplied to this directive factory.
+       *
+       * The hide trigger is based on the show trigger. If the `trigger` option
+       * was passed to the `$tooltipProvider.options` method, it will use the
+       * mapped trigger from `triggerMap` or the passed trigger if the map is
+       * undefined; otherwise, it uses the `triggerMap` value of the show
+       * trigger; else it will just use the show trigger.
+       */
+      function getTriggers ( trigger ) {
+        var show = trigger || options.trigger || defaultTriggerShow;
+        var hide = triggerMap[show] || show;
+        return {
+          show: show,
+          hide: hide
+        };
+      }
+
+      var directiveName = snake_case( type );
+
+      var startSym = $interpolate.startSymbol();
+      var endSym = $interpolate.endSymbol();
+      var template = 
+        '<div '+ directiveName +'-popup '+
+          'title="'+startSym+'tt_title'+endSym+'" '+
+          'content="'+startSym+'tt_content'+endSym+'" '+
+          'placement="'+startSym+'tt_placement'+endSym+'" '+
+          'animation="tt_animation" '+
+          'is-open="tt_isOpen"'+
+          '>'+
+        '</div>';
+
+      return {
+        restrict: 'EA',
+        scope: true,
+        compile: function (tElem, tAttrs) {
+          var tooltipLinker = $compile( template );
+
+          return function link ( scope, element, attrs ) {
+            var tooltip;
+            var transitionTimeout;
+            var popupTimeout;
+            var appendToBody = angular.isDefined( options.appendToBody ) ? options.appendToBody : false;
+            var triggers = getTriggers( undefined );
+            var hasRegisteredTriggers = false;
+            var hasEnableExp = angular.isDefined(attrs[prefix+'Enable']);
+
+            var positionTooltip = function (){
+              var position,
+                ttWidth,
+                ttHeight,
+                ttPosition;
+              // Get the position of the directive element.
+              position = appendToBody ? $position.offset( element ) : $position.position( element );
+
+              // Get the height and width of the tooltip so we can center it.
+              ttWidth = tooltip.prop( 'offsetWidth' );
+              ttHeight = tooltip.prop( 'offsetHeight' );
+
+              // Calculate the tooltip's top and left coordinates to center it with
+              // this directive.
+              switch ( scope.tt_placement ) {
+                case 'right':
+                  ttPosition = {
+                    top: position.top + position.height / 2 - ttHeight / 2,
+                    left: position.left + position.width + 10
+                  };
+                  break;
+                case 'bottom':
+                  ttPosition = {
+                    top: position.top + position.height + 10,
+                    left: position.left
+                  };
+                  break;
+                case 'left':
+                  ttPosition = {
+                    top: position.top + position.height / 2 - ttHeight / 2,
+                    left: position.left - ttWidth - 10
+                  };
+                  break;
+                default:
+                  ttPosition = {
+                    top: position.top - ttHeight - 10,
+                    left: position.left
+                  };
+                  break;
+              }
+
+              ttPosition.top += 'px';
+              ttPosition.left += 'px';
+
+              // Now set the calculated positioning.
+              tooltip.css( ttPosition );
+
+            };
+
+            // By default, the tooltip is not open.
+            // TODO add ability to start tooltip opened
+            scope.tt_isOpen = false;
+
+            function toggleTooltipBind () {
+              if ( ! scope.tt_isOpen ) {
+                showTooltipBind();
+              } else {
+                hideTooltipBind();
+              }
+            }
+
+            // Show the tooltip with delay if specified, otherwise show it immediately
+            function showTooltipBind() {
+              if(hasEnableExp && !scope.$eval(attrs[prefix+'Enable'])) {
+                return;
+              }
+              if ( scope.tt_popupDelay ) {
+                popupTimeout = $timeout( show, scope.tt_popupDelay, false );
+                popupTimeout.then(function(reposition){reposition();});
+              } else {
+                show()();
+              }
+            }
+
+            function hideTooltipBind () {
+              scope.$apply(function () {
+                hide();
+              });
+            }
+
+            // Show the tooltip popup element.
+            function show() {
+
+
+              // Don't show empty tooltips.
+              if ( ! scope.tt_content ) {
+                return angular.noop;
+              }
+
+              createTooltip();
+
+              // If there is a pending remove transition, we must cancel it, lest the
+              // tooltip be mysteriously removed.
+              if ( transitionTimeout ) {
+                $timeout.cancel( transitionTimeout );
+              }
+
+              // Set the initial positioning.
+              tooltip.css({ top: 0, left: 0, display: 'block' });
+
+              // Now we add it to the DOM because need some info about it. But it's not 
+              // visible yet anyway.
+              if ( appendToBody ) {
+                  $document.find( 'body' ).append( tooltip );
+              } else {
+                element.after( tooltip );
+              }
+
+              positionTooltip();
+
+              // And show the tooltip.
+              scope.tt_isOpen = true;
+              scope.$digest(); // digest required as $apply is not called
+
+              // Return positioning function as promise callback for correct
+              // positioning after draw.
+              return positionTooltip;
+            }
+
+            // Hide the tooltip popup element.
+            function hide() {
+              // First things first: we don't show it anymore.
+              scope.tt_isOpen = false;
+
+              //if tooltip is going to be shown after delay, we must cancel this
+              $timeout.cancel( popupTimeout );
+
+              // And now we remove it from the DOM. However, if we have animation, we 
+              // need to wait for it to expire beforehand.
+              // FIXME: this is a placeholder for a port of the transitions library.
+              if ( scope.tt_animation ) {
+                transitionTimeout = $timeout(removeTooltip, 500);
+              } else {
+                removeTooltip();
+              }
+            }
+
+            function createTooltip() {
+              // There can only be one tooltip element per directive shown at once.
+              if (tooltip) {
+                removeTooltip();
+              }
+              tooltip = tooltipLinker(scope, function () {});
+
+              // Get contents rendered into the tooltip
+              scope.$digest();
+            }
+
+            function removeTooltip() {
+              if (tooltip) {
+                tooltip.remove();
+                tooltip = null;
+              }
+            }
+
+            /**
+             * Observe the relevant attributes.
+             */
+            attrs.$observe( type, function ( val ) {
+              scope.tt_content = val;
+
+              if (!val && scope.tt_isOpen ) {
+                hide();
+              }
+            });
+
+            attrs.$observe( prefix+'Title', function ( val ) {
+              scope.tt_title = val;
+            });
+
+            attrs[prefix+'Placement'] = attrs[prefix+'Placement'] || null;
+
+            attrs.$observe( prefix+'Placement', function ( val ) {
+              scope.tt_placement = angular.isDefined( val ) && val ? val : options.placement;
+            });
+
+            attrs[prefix+'PopupDelay'] = attrs[prefix+'PopupDelay'] || null;
+
+            attrs.$observe( prefix+'PopupDelay', function ( val ) {
+              var delay = parseInt( val, 10 );
+              scope.tt_popupDelay = ! isNaN(delay) ? delay : options.popupDelay;
+            });
+
+            var unregisterTriggers = function() {
+              if ( hasRegisteredTriggers ) {
+                if ( angular.isFunction( triggers.show ) ) {
+                  unregisterTriggerFunction();
+                } else {
+                  element.unbind( triggers.show, showTooltipBind );
+                  element.unbind( triggers.hide, hideTooltipBind );
+                }
+              }
+            };
+
+            var unregisterTriggerFunction = function () {};
+
+            attrs[prefix+'Trigger'] = attrs[prefix+'Trigger'] || null;
+
+            attrs.$observe( prefix+'Trigger', function ( val ) {
+              unregisterTriggers();
+              unregisterTriggerFunction();
+
+              triggers = getTriggers( val );
+
+              if ( angular.isFunction( triggers.show ) ) {
+                unregisterTriggerFunction = scope.$watch( function () {
+                  return triggers.show( scope, element, attrs );
+                }, function ( val ) {
+                  return val ? $timeout( show ) : $timeout( hide );
+                });
+              } else {
+                if ( triggers.show === triggers.hide ) {
+                  element.bind( triggers.show, toggleTooltipBind );
+                } else {
+                  element.bind( triggers.show, showTooltipBind );
+                  element.bind( triggers.hide, hideTooltipBind );
+                }
+              }
+
+              hasRegisteredTriggers = true;
+            });
+
+            var animation = scope.$eval(attrs[prefix + 'Animation']);
+            scope.tt_animation = angular.isDefined(animation) ? !!animation : options.animation;
+
+            attrs.$observe( prefix+'AppendToBody', function ( val ) {
+              appendToBody = angular.isDefined( val ) ? $parse( val )( scope ) : appendToBody;
+            });
+
+            // if a tooltip is attached to <body> we need to remove it on
+            // location change as its parent scope will probably not be destroyed
+            // by the change.
+            if ( appendToBody ) {
+              scope.$on('$locationChangeSuccess', function closeTooltipOnLocationChangeSuccess () {
+              if ( scope.tt_isOpen ) {
+                hide();
+              }
+            });
+            }
+
+            // Make sure tooltip is destroyed and removed.
+            scope.$on('$destroy', function onDestroyTooltip() {
+              $timeout.cancel( transitionTimeout );
+              $timeout.cancel( popupTimeout );
+              unregisterTriggers();
+              unregisterTriggerFunction();
+              removeTooltip();
+            });
+          };
+        }
+      };
+    };
+  }];
+})
+
+.directive( 'tooltipPopup', function () {
+  return {
+    restrict: 'EA',
+    replace: true,
+    scope: { content: '@', placement: '@', animation: '&', isOpen: '&' },
+    templateUrl: 'template/tooltip/tooltip-popup.html'
+  };
+})
+
+.directive( 'tooltip', [ '$tooltip', function ( $tooltip ) {
+  return $tooltip( 'tooltip', 'tooltip', 'mouseenter' );
+}])
+
+.directive( 'tooltipHtmlUnsafePopup', function () {
+  return {
+    restrict: 'EA',
+    replace: true,
+    scope: { content: '@', placement: '@', animation: '&', isOpen: '&' },
+    templateUrl: 'template/tooltip/tooltip-html-unsafe-popup.html'
+  };
+})
+
+.directive( 'tooltipHtmlUnsafe', [ '$tooltip', function ( $tooltip ) {
+  return $tooltip( 'tooltipHtmlUnsafe', 'tooltip', 'mouseenter' );
+}]);
+
+/**
+ * The following features are still outstanding: popup delay, animation as a
+ * function, placement as a function, inside, support for more triggers than
+ * just mouse enter/leave, html popovers, and selector delegatation.
+ */
+angular.module( 'mm.foundation.popover', [ 'mm.foundation.tooltip' ] )
+
+.directive( 'popoverPopup', function () {
+  return {
+    restrict: 'EA',
+    replace: true,
+    scope: { title: '@', content: '@', placement: '@', animation: '&', isOpen: '&' },
+    templateUrl: 'template/popover/popover.html'
+  };
+})
+
+.directive( 'popover', [ '$tooltip', function ( $tooltip ) {
+  return $tooltip( 'popover', 'popover', 'click' );
+}]);
+
+angular.module('mm.foundation.progressbar', ['mm.foundation.transition'])
+
+.constant('progressConfig', {
+  animate: true,
+  max: 100
+})
+
+.controller('ProgressController', ['$scope', '$attrs', 'progressConfig', '$transition', function($scope, $attrs, progressConfig, $transition) {
+    var self = this,
+        bars = [],
+        max = angular.isDefined($attrs.max) ? $scope.$parent.$eval($attrs.max) : progressConfig.max,
+        animate = angular.isDefined($attrs.animate) ? $scope.$parent.$eval($attrs.animate) : progressConfig.animate;
+
+    this.addBar = function(bar, element) {
+        var oldValue = 0, index = bar.$parent.$index;
+        if ( angular.isDefined(index) &&  bars[index] ) {
+            oldValue = bars[index].value;
+        }
+        bars.push(bar);
+
+        this.update(element, bar.value, oldValue);
+
+        bar.$watch('value', function(value, oldValue) {
+            if (value !== oldValue) {
+                self.update(element, value, oldValue);
+            }
+        });
+
+        bar.$on('$destroy', function() {
+            self.removeBar(bar);
+        });
+    };
+
+    // Update bar element width
+    this.update = function(element, newValue, oldValue) {
+        var percent = this.getPercentage(newValue);
+
+        if (animate) {
+            element.css('width', this.getPercentage(oldValue) + '%');
+            $transition(element, {width: percent + '%'});
+        } else {
+            element.css({'transition': 'none', 'width': percent + '%'});
+        }
+    };
+
+    this.removeBar = function(bar) {
+        bars.splice(bars.indexOf(bar), 1);
+    };
+
+    this.getPercentage = function(value) {
+        return Math.round(100 * value / max);
+    };
+}])
+
+.directive('progress', function() {
+    return {
+        restrict: 'EA',
+        replace: true,
+        transclude: true,
+        controller: 'ProgressController',
+        require: 'progress',
+        scope: {},
+        template: '<div class="progress" ng-transclude></div>'
+        //templateUrl: 'template/progressbar/progress.html' // Works in AngularJS 1.2
+    };
+})
+
+.directive('bar', function() {
+    return {
+        restrict: 'EA',
+        replace: true,
+        transclude: true,
+        require: '^progress',
+        scope: {
+            value: '=',
+            type: '@'
+        },
+        templateUrl: 'template/progressbar/bar.html',
+        link: function(scope, element, attrs, progressCtrl) {
+            progressCtrl.addBar(scope, element);
+        }
+    };
+})
+
+.directive('progressbar', function() {
+    return {
+        restrict: 'EA',
+        replace: true,
+        transclude: true,
+        controller: 'ProgressController',
+        scope: {
+            value: '=',
+            type: '@'
+        },
+        templateUrl: 'template/progressbar/progressbar.html',
+        link: function(scope, element, attrs, progressCtrl) {
+            progressCtrl.addBar(scope, angular.element(element.children()[0]));
+        }
+    };
+});
+
+angular.module('mm.foundation.rating', [])
+
+.constant('ratingConfig', {
+  max: 5,
+  stateOn: null,
+  stateOff: null
+})
+
+.controller('RatingController', ['$scope', '$attrs', '$parse', 'ratingConfig', function($scope, $attrs, $parse, ratingConfig) {
+
+  this.maxRange = angular.isDefined($attrs.max) ? $scope.$parent.$eval($attrs.max) : ratingConfig.max;
+  this.stateOn = angular.isDefined($attrs.stateOn) ? $scope.$parent.$eval($attrs.stateOn) : ratingConfig.stateOn;
+  this.stateOff = angular.isDefined($attrs.stateOff) ? $scope.$parent.$eval($attrs.stateOff) : ratingConfig.stateOff;
+
+  this.createRateObjects = function(states) {
+    var defaultOptions = {
+      stateOn: this.stateOn,
+      stateOff: this.stateOff
+    };
+
+    for (var i = 0, n = states.length; i < n; i++) {
+      states[i] = angular.extend({ index: i }, defaultOptions, states[i]);
+    }
+    return states;
+  };
+
+  // Get objects used in template
+  $scope.range = angular.isDefined($attrs.ratingStates) ?  this.createRateObjects(angular.copy($scope.$parent.$eval($attrs.ratingStates))): this.createRateObjects(new Array(this.maxRange));
+
+  $scope.rate = function(value) {
+    if ( $scope.value !== value && !$scope.readonly ) {
+      $scope.value = value;
+    }
+  };
+
+  $scope.enter = function(value) {
+    if ( ! $scope.readonly ) {
+      $scope.val = value;
+    }
+    $scope.onHover({value: value});
+  };
+
+  $scope.reset = function() {
+    $scope.val = angular.copy($scope.value);
+    $scope.onLeave();
+  };
+
+  $scope.$watch('value', function(value) {
+    $scope.val = value;
+  });
+
+  $scope.readonly = false;
+  if ($attrs.readonly) {
+    $scope.$parent.$watch($parse($attrs.readonly), function(value) {
+      $scope.readonly = !!value;
+    });
+  }
+}])
+
+.directive('rating', function() {
+  return {
+    restrict: 'EA',
+    scope: {
+      value: '=',
+      onHover: '&',
+      onLeave: '&'
+    },
+    controller: 'RatingController',
+    templateUrl: 'template/rating/rating.html',
+    replace: true
+  };
+});
+
+
+/**
+ * @ngdoc overview
+ * @name mm.foundation.tabs
+ *
+ * @description
+ * AngularJS version of the tabs directive.
+ */
+
+angular.module('mm.foundation.tabs', [])
+
+.controller('TabsetController', ['$scope', function TabsetCtrl($scope) {
+  var ctrl = this,
+      tabs = ctrl.tabs = $scope.tabs = [];
+
+  if (angular.isUndefined($scope.openOnLoad)) { $scope.openOnLoad = true; }
+
+  ctrl.select = function(tab) {
+    angular.forEach(tabs, function(tab) {
+      tab.active = false;
+    });
+    tab.active = true;
+  };
+
+  ctrl.addTab = function addTab(tab) {
+    tabs.push(tab);
+    if ($scope.openOnLoad && (tabs.length === 1 || tab.active)) {
+      ctrl.select(tab);
+    }
+  };
+
+  ctrl.removeTab = function removeTab(tab) {
+    var index = tabs.indexOf(tab);
+    //Select a new tab if the tab to be removed is selected
+    if (tab.active && tabs.length > 1) {
+      //If this is the last tab, select the previous tab. else, the next tab.
+      var newActiveIndex = index == tabs.length - 1 ? index - 1 : index + 1;
+      ctrl.select(tabs[newActiveIndex]);
+    }
+    tabs.splice(index, 1);
+  };
+}])
+
+/**
+ * @ngdoc directive
+ * @name mm.foundation.tabs.directive:tabset
+ * @restrict EA
+ *
+ * @description
+ * Tabset is the outer container for the tabs directive
+ *
+ * @param {boolean=} vertical Whether or not to use vertical styling for the tabs.
+ * @param {boolean=} justified Whether or not to use justified styling for the tabs.
+ *
+ * @example
+<example module="mm.foundation">
+  <file name="index.html">
+    <tabset>
+      <tab heading="Tab 1"><b>First</b> Content!</tab>
+      <tab heading="Tab 2"><i>Second</i> Content!</tab>
+    </tabset>
+    <hr />
+    <tabset vertical="true">
+      <tab heading="Vertical Tab 1"><b>First</b> Vertical Content!</tab>
+      <tab heading="Vertical Tab 2"><i>Second</i> Vertical Content!</tab>
+    </tabset>
+    <tabset justified="true">
+      <tab heading="Justified Tab 1"><b>First</b> Justified Content!</tab>
+      <tab heading="Justified Tab 2"><i>Second</i> Justified Content!</tab>
+    </tabset>
+  </file>
+</example>
+ */
+.directive('tabset', function() {
+  return {
+    restrict: 'EA',
+    transclude: true,
+    replace: true,
+    scope: {
+      openOnLoad: '=?'
+    },
+    controller: 'TabsetController',
+    templateUrl: 'template/tabs/tabset.html',
+    link: function(scope, element, attrs) {
+      scope.vertical = angular.isDefined(attrs.vertical) ? scope.$parent.$eval(attrs.vertical) : false;
+      scope.justified = angular.isDefined(attrs.justified) ? scope.$parent.$eval(attrs.justified) : false;
+      scope.type = angular.isDefined(attrs.type) ? scope.$parent.$eval(attrs.type) : 'tabs';
+    }
+  };
+})
+
+/**
+ * @ngdoc directive
+ * @name mm.foundation.tabs.directive:tab
+ * @restrict EA
+ *
+ * @param {string=} heading The visible heading, or title, of the tab. Set HTML headings with {@link mm.foundation.tabs.directive:tabHeading tabHeading}.
+ * @param {string=} select An expression to evaluate when the tab is selected.
+ * @param {boolean=} active A binding, telling whether or not this tab is selected.
+ * @param {boolean=} disabled A binding, telling whether or not this tab is disabled.
+ *
+ * @description
+ * Creates a tab with a heading and content. Must be placed within a {@link mm.foundation.tabs.directive:tabset tabset}.
+ *
+ * @example
+<example module="mm.foundation">
+  <file name="index.html">
+    <div ng-controller="TabsDemoCtrl">
+      <button class="button small" ng-click="items[0].active = true">
+        Select item 1, using active binding
+      </button>
+      <button class="button small" ng-click="items[1].disabled = !items[1].disabled">
+        Enable/disable item 2, using disabled binding
+      </button>
+      <br />
+      <tabset>
+        <tab heading="Tab 1">First Tab</tab>
+        <tab select="alertMe()">
+          <tab-heading><i class="fa fa-bell"></i> Alert me!</tab-heading>
+          Second Tab, with alert callback and html heading!
+        </tab>
+        <tab ng-repeat="item in items"
+          heading="{{item.title}}"
+          disabled="item.disabled"
+          active="item.active">
+          {{item.content}}
+        </tab>
+      </tabset>
+    </div>
+  </file>
+  <file name="script.js">
+    function TabsDemoCtrl($scope) {
+      $scope.items = [
+        { title:"Dynamic Title 1", content:"Dynamic Item 0" },
+        { title:"Dynamic Title 2", content:"Dynamic Item 1", disabled: true }
+      ];
+
+      $scope.alertMe = function() {
+        setTimeout(function() {
+          alert("You've selected the alert tab!");
+        });
+      };
+    };
+  </file>
+</example>
+ */
+
+/**
+ * @ngdoc directive
+ * @name mm.foundation.tabs.directive:tabHeading
+ * @restrict EA
+ *
+ * @description
+ * Creates an HTML heading for a {@link mm.foundation.tabs.directive:tab tab}. Must be placed as a child of a tab element.
+ *
+ * @example
+<example module="mm.foundation">
+  <file name="index.html">
+    <tabset>
+      <tab>
+        <tab-heading><b>HTML</b> in my titles?!</tab-heading>
+        And some content, too!
+      </tab>
+      <tab>
+        <tab-heading><i class="fa fa-heart"></i> Icon heading?!?</tab-heading>
+        That's right.
+      </tab>
+    </tabset>
+  </file>
+</example>
+ */
+.directive('tab', ['$parse', function($parse) {
+  return {
+    require: '^tabset',
+    restrict: 'EA',
+    replace: true,
+    templateUrl: 'template/tabs/tab.html',
+    transclude: true,
+    scope: {
+      heading: '@',
+      onSelect: '&select', //This callback is called in contentHeadingTransclude
+                          //once it inserts the tab's content into the dom
+      onDeselect: '&deselect'
+    },
+    controller: function() {
+      //Empty controller so other directives can require being 'under' a tab
+    },
+    compile: function(elm, attrs, transclude) {
+      return function postLink(scope, elm, attrs, tabsetCtrl) {
+        var getActive, setActive;
+        if (attrs.active) {
+          getActive = $parse(attrs.active);
+          setActive = getActive.assign;
+          scope.$parent.$watch(getActive, function updateActive(value, oldVal) {
+            // Avoid re-initializing scope.active as it is already initialized
+            // below. (watcher is called async during init with value ===
+            // oldVal)
+            if (value !== oldVal) {
+              scope.active = !!value;
+            }
+          });
+          scope.active = getActive(scope.$parent);
+        } else {
+          setActive = getActive = angular.noop;
+        }
+
+        scope.$watch('active', function(active) {
+          if( !angular.isFunction(setActive) ){
+            return;
+          }
+          // Note this watcher also initializes and assigns scope.active to the
+          // attrs.active expression.          
+          setActive(scope.$parent, active);
+          if (active) {
+            tabsetCtrl.select(scope);
+            scope.onSelect();
+          } else {
+            scope.onDeselect();
+          }
+        });
+
+        scope.disabled = false;
+        if ( attrs.disabled ) {
+          scope.$parent.$watch($parse(attrs.disabled), function(value) {
+            scope.disabled = !! value;
+          });
+        }
+
+        scope.select = function() {
+          if ( ! scope.disabled ) {
+            scope.active = true;
+          }
+        };
+
+        tabsetCtrl.addTab(scope);
+        scope.$on('$destroy', function() {
+          tabsetCtrl.removeTab(scope);
+        });
+
+
+        //We need to transclude later, once the content container is ready.
+        //when this link happens, we're inside a tab heading.
+        scope.$transcludeFn = transclude;
+      };
+    }
+  };
+}])
+
+.directive('tabHeadingTransclude', [function() {
+  return {
+    restrict: 'A',
+    require: '^tab',
+    link: function(scope, elm, attrs, tabCtrl) {
+      scope.$watch('headingElement', function updateHeadingElement(heading) {
+        if (heading) {
+          elm.html('');
+          elm.append(heading);
+        }
+      });
+    }
+  };
+}])
+
+.directive('tabContentTransclude', function() {
+  return {
+    restrict: 'A',
+    require: '^tabset',
+    link: function(scope, elm, attrs) {
+      var tab = scope.$eval(attrs.tabContentTransclude);
+
+      //Now our tab is ready to be transcluded: both the tab heading area
+      //and the tab content area are loaded.  Transclude 'em both.
+      tab.$transcludeFn(tab.$parent, function(contents) {
+        angular.forEach(contents, function(node) {
+          if (isTabHeading(node)) {
+            //Let tabHeadingTransclude know.
+            tab.headingElement = node;
+          } else {
+            elm.append(node);
+          }
+        });
+      });
+    }
+  };
+  function isTabHeading(node) {
+    return node.tagName &&  (
+      node.hasAttribute('tab-heading') ||
+      node.hasAttribute('data-tab-heading') ||
+      node.tagName.toLowerCase() === 'tab-heading' ||
+      node.tagName.toLowerCase() === 'data-tab-heading'
+    );
+  }
+})
+
+;
+
+angular.module("mm.foundation.topbar", ['mm.foundation.mediaQueries'])
+.factory('closest', [function() {
+  return function(el, selector) {
+    var matchesSelector = function (node, selector) {
+      var nodes = (node.parentNode || node.document).querySelectorAll(selector);
+      var i = -1;
+      while (nodes[++i] && nodes[i] != node){}
+      return !!nodes[i];
+    };
+
+    var element = el[0];
+    while (element) {
+      if (matchesSelector(element, selector)) {
+        return angular.element(element);
+      } else {
+        element = element.parentElement;
+      }
+    }
+    return false;
+  };
+}])
+.directive('topBar', ['$timeout','$compile', '$window', '$document', 'mediaQueries',
+  function($timeout, $compile, $window, $document, mediaQueries) {
+    return {
+      scope: {
+        stickyClass : '@',
+        backText: '@',
+        stickyOn : '=',
+        customBackText: '=',
+        isHover: '=',
+        mobileShowParentLink: '=',
+        scrolltop : '=',
+      },
+      restrict: 'EA',
+      replace: true,
+      templateUrl: 'template/topbar/top-bar.html',
+      transclude: true,
+      controller: ['$window', '$scope', 'closest', function($window, $scope, closest) {
+        $scope.settings = {};
+        $scope.settings.stickyClass = $scope.stickyClass || 'sticky';
+        $scope.settings.backText = $scope.backText || 'Back';
+        $scope.settings.stickyOn = $scope.stickyOn || 'all';
+
+        $scope.settings.customBackText = $scope.customBackText === undefined ? true : $scope.customBackText;
+        $scope.settings.isHover = $scope.isHover === undefined ? true : $scope.isHover;
+        $scope.settings.mobileShowParentLink = $scope.mobileShowParentLink === undefined ? true : $scope.mobileShowParentLink;
+        $scope.settings.scrolltop = $scope.scrolltop === undefined ? true : $scope.scrolltop; // jump to top when sticky nav menu toggle is clicked
+
+        this.settings = $scope.settings;
+
+        $scope.index = 0;
+
+        var outerHeight = function(el) {
+          var height = el.offsetHeight;
+          var style = el.currentStyle || getComputedStyle(el);
+
+          height += parseInt(style.marginTop, 10) + parseInt(style.marginBottom, 10);
+          return height;
+        };
+
+
+        var sections = [];
+
+        this.addSection = function(section) {
+          sections.push(section);
+        };
+
+        this.removeSection = function(section) {
+          var index = sections.indexOf(section);
+          if (index > -1) {
+            sections.splice(index, 1);
+          }
+        };
+
+        var dir = /rtl/i.test($document.find('html').attr('dir')) ? 'right' : 'left';
+
+        $scope.$watch('index', function(index) {
+          for(var i = 0; i < sections.length; i++){
+            sections[i].move(dir, index);
+          }
+        });
+
+        this.toggle = function(on) {
+          $scope.toggle(on);
+          for(var i = 0; i < sections.length; i++){
+            sections[i].reset();
+          }
+          $scope.index = 0;
+          $scope.height = '';
+          $scope.$apply();
+        };
+
+        this.back = function(event) {
+          if($scope.index < 1 || !mediaQueries.topbarBreakpoint()){
+            return;
+          }
+
+          var $link = angular.element(event.currentTarget);
+          var $movedLi = closest($link, 'li.moved');
+          var $previousLevelUl = $movedLi.parent();
+          $scope.index = $scope.index -1;
+
+          if($scope.index === 0){
+            $scope.height = '';
+          } else {
+            $scope.height = $scope.originalHeight + outerHeight($previousLevelUl[0]);
+          }
+
+          $timeout(function() {
+            $movedLi.removeClass('moved');
+          }, 300);
+        };
+
+        this.forward = function(event) {
+          if(!mediaQueries.topbarBreakpoint()){
+            return false;
+          }
+
+          var $link = angular.element(event.currentTarget);
+          var $selectedLi = closest($link, 'li');
+          $selectedLi.addClass('moved');
+          $scope.height = $scope.originalHeight + outerHeight($link.parent()[0].querySelector('ul'));
+          $scope.index = $scope.index + 1;
+          $scope.$apply();
+        };
+
+      }],
+      link: function(scope, element, attrs) {
+        var topbar = scope.topbar = element;
+        var topbarContainer = topbar.parent();
+        var body = angular.element($document[0].querySelector('body'));
+        var lastBreakpoint = mediaQueries.topbarBreakpoint();
+
+        var isSticky = scope.isSticky = function() {
+          var sticky = topbarContainer.hasClass(scope.settings.stickyClass);
+          if (sticky && scope.settings.stickyOn === 'all') {
+            return true;
+          } else if (sticky && mediaQueries.small() && scope.settings.stickyOn === 'small') {
+            return true;
+          } else if (sticky && mediaQueries.medium() && scope.settings.stickyOn === 'medium') {
+            return true;
+          } else if (sticky && mediaQueries.large() && scope.settings.stickyOn === 'large') {
+            return true;
+          }
+          return false;
+        };
+
+        var updateStickyPositioning = function() {
+          if (!scope.stickyTopbar || !scope.isSticky()) {
+            return;
+          }
+
+          var distance = stickyoffset;
+
+          if ($window.pageYOffset > distance && !topbarContainer.hasClass('fixed')) {
+            topbarContainer.addClass('fixed');
+            body.css('padding-top', scope.originalHeight + 'px');
+          } else if ($window.pageYOffset <= distance && topbarContainer.hasClass('fixed')) {
+            topbarContainer.removeClass('fixed');
+            body.css('padding-top', '');
+          }
+        };
+
+        var onResize = function() {
+          var currentBreakpoint = mediaQueries.topbarBreakpoint();
+          if(lastBreakpoint === currentBreakpoint){
+            return;
+          }
+          lastBreakpoint = mediaQueries.topbarBreakpoint();
+
+          topbar.removeClass('expanded');
+          topbar.parent().removeClass('expanded');
+          scope.height = '';
+
+          var sections = angular.element(topbar[0].querySelectorAll('section'));
+          angular.forEach(sections, function(section) {
+            angular.element(section.querySelectorAll('li.moved')).removeClass('moved');
+          });
+
+          scope.$apply();
+        };
+
+        var onScroll = function() {
+          updateStickyPositioning();
+          scope.$apply();
+        };
+
+        scope.toggle = function(on) {
+          if(!mediaQueries.topbarBreakpoint()){
+            return false;
+          }
+
+          var expand = (on === undefined) ? !topbar.hasClass('expanded') : on;
+
+          if (expand) {
+            topbar.addClass('expanded');
+          }
+          else {
+            topbar.removeClass('expanded');
+          }
+
+          if (scope.settings.scrolltop) {
+            if (!expand && topbar.hasClass('fixed')) {
+              topbar.parent().addClass('fixed');
+              topbar.removeClass('fixed');
+              body.css('padding-top', scope.originalHeight + 'px');
+            } else if (expand && topbar.parent().hasClass('fixed')) {
+              topbar.parent().removeClass('fixed');
+              topbar.addClass('fixed');
+              body.css('padding-top', '');
+              $window.scrollTo(0,0);
+            }
+          } else {
+            if(isSticky()) {
+              topbar.parent().addClass('fixed');
+            }
+
+            if(topbar.parent().hasClass('fixed')) {
+              if (!expand) {
+                topbar.removeClass('fixed');
+                topbar.parent().removeClass('expanded');
+                updateStickyPositioning();
+              } else {
+                topbar.addClass('fixed');
+                topbar.parent().addClass('expanded');
+                body.css('padding-top', scope.originalHeight + 'px');
+              }
+            }
+          }
+        };
+
+        if(topbarContainer.hasClass('fixed') || isSticky() ) {
+          scope.stickyTopbar = true;
+          scope.height = topbarContainer[0].offsetHeight;
+          var stickyoffset = topbarContainer[0].getBoundingClientRect().top + $window.pageYOffset;
+        } else {
+          scope.height = topbar[0].offsetHeight;
+        }
+
+        scope.originalHeight = scope.height;
+
+        scope.$watch('height', function(h) {
+          if(h){
+            topbar.css('height', h + 'px');
+          } else {
+            topbar.css('height', '');
+          }
+        });
+
+        angular.element($window).bind('resize', onResize);
+        angular.element($window).bind('scroll', onScroll);
+
+        scope.$on('$destroy', function() {
+          angular.element($window).unbind('scroll', onResize);
+          angular.element($window).unbind('resize', onScroll);
+        });
+
+        if (topbarContainer.hasClass('fixed')) {
+          body.css('padding-top', scope.originalHeight + 'px');
+        }
+      }
+    };
+  }]
+)
+.directive('toggleTopBar', ['closest', function (closest) {
+  return {
+    scope: {},
+    require: '^topBar',
+    restrict: 'A',
+    replace: true,
+    templateUrl: 'template/topbar/toggle-top-bar.html',
+    transclude: true,
+    link: function(scope, element, attrs, topBar) {
+      element.bind('click', function(event) {
+        var li = closest(angular.element(event.currentTarget), 'li');
+        if(!li.hasClass('back') && !li.hasClass('has-dropdown')) {
+          topBar.toggle();
+        }
+      });
+
+      scope.$on('$destroy', function() {
+        element.unbind('click');
+      });
+    }
+  };
+}])
+.directive('topBarSection', ['$compile', 'closest', function($compile, closest) {
+  return {
+    scope: {},
+    require: '^topBar',
+    restrict: 'EA',
+    replace: true,
+    templateUrl: 'template/topbar/top-bar-section.html',
+    transclude: true,
+    link: function(scope, element, attrs, topBar) {
+      var section = element;
+
+      scope.reset = function() {
+        angular.element(section[0].querySelectorAll('li.moved')).removeClass('moved');
+      };
+
+      scope.move = function(dir, index) {
+        if(dir === 'left'){
+          section.css({"left": index * -100 + '%'});
+        }
+        else {
+          section.css({"right": index * -100 + '%'});
+        }
+      };
+
+      topBar.addSection(scope);
+
+      scope.$on("$destroy", function() {
+        topBar.removeSection(scope);
+      });
+
+      // Top level links close menu on click
+      var links = section[0].querySelectorAll('li>a');
+      angular.forEach(links, function(link) {
+        var $link = angular.element(link);
+        var li = closest($link, 'li');
+        if (li.hasClass('has-dropdown') || li.hasClass('back') || li.hasClass('title')) {
+          return;
+        }
+
+        $link.bind('click', function() {
+          topBar.toggle(false);
+        });
+
+        scope.$on('$destroy', function() {
+          $link.bind('click');
+        });
+      });
+    }
+  };
+}])
+.directive('hasDropdown', ['mediaQueries', function (mediaQueries) {
+  return {
+    scope: {},
+    require: '^topBar',
+    restrict: 'A',
+    templateUrl: 'template/topbar/has-dropdown.html',
+    replace: true,
+    transclude: true,
+    link: function(scope, element, attrs, topBar) {
+      scope.triggerLink = element.children('a')[0];
+
+      var $link = angular.element(scope.triggerLink);
+
+      $link.bind('click', function(event) {
+        topBar.forward(event);
+      });
+      scope.$on('$destroy', function() {
+        $link.unbind('click');
+      });
+
+      element.bind('mouseenter', function() {
+        if(topBar.settings.isHover && !mediaQueries.topbarBreakpoint()){
+          element.addClass('not-click');
+        }
+      });
+      element.bind('click', function(event) {
+        if(!topBar.settings.isHover && !mediaQueries.topbarBreakpoint()){
+          element.toggleClass('not-click');
+        }
+      });
+
+      element.bind('mouseleave', function() {
+        element.removeClass('not-click');
+      });
+
+      scope.$on('$destroy', function() {
+        element.unbind('click');
+        element.unbind('mouseenter');
+        element.unbind('mouseleave');
+      });
+    },
+    controller: ['$window', '$scope', function($window, $scope) {
+      this.triggerLink = $scope.triggerLink;
+    }]
+  };
+}])
+.directive('topBarDropdown', ['$compile', function($compile) {
+  return {
+    scope: {},
+    require: ['^topBar', '^hasDropdown'],
+    restrict: 'A',
+    replace: true,
+    templateUrl: 'template/topbar/top-bar-dropdown.html',
+    transclude: true,
+    link: function(scope, element, attrs, ctrls) {
+      var topBar = ctrls[0];
+      var hasDropdown = ctrls[1];
+      var $link = angular.element(hasDropdown.triggerLink);
+      var url = $link.attr('href');
+      var $titleLi;
+
+      scope.linkText = $link.text();
+
+      scope.back = function(event) {
+        topBar.back(event);
+      };
+
+      // Add back link
+      if (topBar.settings.customBackText) {
+        scope.backText = topBar.settings.backText;
+      } else {
+        scope.backText = '&laquo; ' + $link.html();
+      }
+
+      if (topBar.settings.mobileShowParentLink && url && url.length > 1) {
+        $titleLi = angular.element('<li class="title back js-generated">' +
+            '<h5><a href="#" ng-click="back($event);">{{backText}}</a></h5></li>' +
+            '<li><a class="parent-link js-generated" href="' +
+            url + '">{{linkText}}</a></li>');
+      } else {
+        $titleLi = angular.element('<li class="title back js-generated">' +
+            '<h5><a href="" ng-click="back($event);">{{backText}}</a></h5></li>');
+      }
+
+      $compile($titleLi)(scope);
+      element.prepend($titleLi);
+    }
+  };
+}]);
+
+angular.module( 'mm.foundation.tour', [ 'mm.foundation.position', 'mm.foundation.tooltip' ] )
+
+.service( '$tour', [ '$window', function ( $window ) {
+  var currentIndex = getStoredCurrentStep();
+  var ended = false;
+  var steps = {};
+
+  function getStoredCurrentStep() {
+    try {
+      return parseInt( $window.localStorage.getItem( 'mm.tour.step' ), 10 );
+    } catch(e) {
+      if (e.name !== "SecurityError") {
+        throw e;
+      }
+    }
+  }
+
+  function storeCurrentStep() {
+    try {
+      $window.localStorage.setItem( 'mm.tour.step', currentIndex );
+    } catch(e) {
+      if (e.name !== "SecurityError") {
+        throw e;
+      }
+    }
+  }
+
+  function setCurrentStep(step) {
+    currentIndex = step;
+    storeCurrentStep();
+  }
+
+  this.add = function ( index, attrs ) {
+    steps[ index ] = attrs;
+  };
+
+  this.has = function ( index ) {
+    return !!steps[ index ];
+  };
+
+  this.isActive = function () {
+    return currentIndex > 0;
+  };
+
+  this.current = function ( index ) {
+    if ( index ) {
+      setCurrentStep( currentIndex );
+    } else {
+      return currentIndex;
+    }
+  };
+
+  this.start = function () {
+    setCurrentStep( 1 );
+  };
+
+  this.next = function () {
+    setCurrentStep( currentIndex + 1 );
+  };
+
+  this.end = function () {
+    setCurrentStep( 0 );
+  };
+}])
+
+.directive( 'stepTextPopup', ['$tour', function ( $tour ) {
+  return {
+    restrict: 'EA',
+    replace: true,
+    scope: { title: '@', content: '@', placement: '@', animation: '&', isOpen: '&' },
+    templateUrl: 'template/tour/tour.html',
+    link: function (scope, element) {
+      scope.isLastStep = function () {
+        return !$tour.has( $tour.current() + 1 );
+      };
+
+      scope.endTour = function () {
+        element.remove();
+        $tour.end();
+      };
+
+      scope.nextStep = function () {
+        element.remove();
+        $tour.next();
+      };
+
+      scope.$on('$locationChangeSuccess', scope.endTour);
+    }
+  };
+}])
+
+.directive( 'stepText', [ '$position', '$tooltip', '$tour', '$window', function ( $position, $tooltip, $tour, $window ) {
+  function isElementInViewport( element ) {
+    var rect = element[0].getBoundingClientRect();
+
+    return (
+      rect.top >= 0 &&
+      rect.left >= 0 &&
+      rect.bottom <= ($window.innerHeight - 80) &&
+      rect.right <= $window.innerWidth
+    );
+  }
+
+  function show( scope, element, attrs ) {
+    var index = parseInt( attrs.stepIndex, 10);
+
+    if ( $tour.isActive() && index ) {
+      $tour.add( index, attrs );
+
+      if ( index === $tour.current() ) {
+        if ( !isElementInViewport( element ) ) {
+          var offset = $position.offset( element );
+          $window.scrollTo( 0, offset.top - $window.innerHeight / 2 );
+        }
+
+        return true;
+      }
+    }
+
+    return false;
+  }
+
+  return $tooltip( 'stepText', 'step', show );
+}]);
+
+angular.module('mm.foundation.typeahead', ['mm.foundation.position', 'mm.foundation.bindHtml'])
+
+/**
+ * A helper service that can parse typeahead's syntax (string provided by users)
+ * Extracted to a separate service for ease of unit testing
+ */
+  .factory('typeaheadParser', ['$parse', function ($parse) {
+
+  //                      00000111000000000000022200000000000000003333333333333330000000000044000
+  var TYPEAHEAD_REGEXP = /^\s*(.*?)(?:\s+as\s+(.*?))?\s+for\s+(?:([\$\w][\$\w\d]*))\s+in\s+(.*)$/;
+
+  return {
+    parse:function (input) {
+
+      var match = input.match(TYPEAHEAD_REGEXP);
+      if (!match) {
+        throw new Error(
+          "Expected typeahead specification in form of '_modelValue_ (as _label_)? for _item_ in _collection_'" +
+            " but got '" + input + "'.");
+      }
+
+      return {
+        itemName:match[3],
+        source:$parse(match[4]),
+        viewMapper:$parse(match[2] || match[1]),
+        modelMapper:$parse(match[1])
+      };
+    }
+  };
+}])
+
+  .directive('typeahead', ['$compile', '$parse', '$q', '$timeout', '$document', '$position', 'typeaheadParser',
+    function ($compile, $parse, $q, $timeout, $document, $position, typeaheadParser) {
+
+  var HOT_KEYS = [9, 13, 27, 38, 40];
+
+  return {
+    require:'ngModel',
+    link:function (originalScope, element, attrs, modelCtrl) {
+
+      //SUPPORTED ATTRIBUTES (OPTIONS)
+
+      //minimal no of characters that needs to be entered before typeahead kicks-in
+      var minSearch = originalScope.$eval(attrs.typeaheadMinLength) || 1;
+
+      //minimal wait time after last character typed before typehead kicks-in
+      var waitTime = originalScope.$eval(attrs.typeaheadWaitMs) || 0;
+
+      //should it restrict model values to the ones selected from the popup only?
+      var isEditable = originalScope.$eval(attrs.typeaheadEditable) !== false;
+
+      //binding to a variable that indicates if matches are being retrieved asynchronously
+      var isLoadingSetter = $parse(attrs.typeaheadLoading).assign || angular.noop;
+
+      //a callback executed when a match is selected
+      var onSelectCallback = $parse(attrs.typeaheadOnSelect);
+
+      var inputFormatter = attrs.typeaheadInputFormatter ? $parse(attrs.typeaheadInputFormatter) : undefined;
+
+      var appendToBody =  attrs.typeaheadAppendToBody ? $parse(attrs.typeaheadAppendToBody) : false;
+
+      //INTERNAL VARIABLES
+
+      //model setter executed upon match selection
+      var $setModelValue = $parse(attrs.ngModel).assign;
+
+      //expressions used by typeahead
+      var parserResult = typeaheadParser.parse(attrs.typeahead);
+
+      var hasFocus;
+
+      //pop-up element used to display matches
+      var popUpEl = angular.element('<div typeahead-popup></div>');
+      popUpEl.attr({
+        matches: 'matches',
+        active: 'activeIdx',
+        select: 'select(activeIdx)',
+        query: 'query',
+        position: 'position'
+      });
+      //custom item template
+      if (angular.isDefined(attrs.typeaheadTemplateUrl)) {
+        popUpEl.attr('template-url', attrs.typeaheadTemplateUrl);
+      }
+
+      //create a child scope for the typeahead directive so we are not polluting original scope
+      //with typeahead-specific data (matches, query etc.)
+      var scope = originalScope.$new();
+      originalScope.$on('$destroy', function(){
+        scope.$destroy();
+      });
+
+      var resetMatches = function() {
+        scope.matches = [];
+        scope.activeIdx = -1;
+      };
+
+      var getMatchesAsync = function(inputValue) {
+
+        var locals = {$viewValue: inputValue};
+        isLoadingSetter(originalScope, true);
+        $q.when(parserResult.source(originalScope, locals)).then(function(matches) {
+
+          //it might happen that several async queries were in progress if a user were typing fast
+          //but we are interested only in responses that correspond to the current view value
+          if (inputValue === modelCtrl.$viewValue && hasFocus) {
+            if (matches.length > 0) {
+
+              scope.activeIdx = 0;
+              scope.matches.length = 0;
+
+              //transform labels
+              for(var i=0; i<matches.length; i++) {
+                locals[parserResult.itemName] = matches[i];
+                scope.matches.push({
+                  label: parserResult.viewMapper(scope, locals),
+                  model: matches[i]
+                });
+              }
+
+              scope.query = inputValue;
+              //position pop-up with matches - we need to re-calculate its position each time we are opening a window
+              //with matches as a pop-up might be absolute-positioned and position of an input might have changed on a page
+              //due to other elements being rendered
+              scope.position = appendToBody ? $position.offset(element) : $position.position(element);
+              scope.position.top = scope.position.top + element.prop('offsetHeight');
+
+            } else {
+              resetMatches();
+            }
+          }
+        }, function(){
+          resetMatches();
+        }).finally(function() {
+          isLoadingSetter(originalScope, false);
+        });
+      };
+
+      resetMatches();
+
+      //we need to propagate user's query so we can higlight matches
+      scope.query = undefined;
+
+      //Declare the timeout promise var outside the function scope so that stacked calls can be cancelled later
+      var timeoutPromise;
+
+      //plug into $parsers pipeline to open a typeahead on view changes initiated from DOM
+      //$parsers kick-in on all the changes coming from the view as well as manually triggered by $setViewValue
+      modelCtrl.$parsers.unshift(function (inputValue) {
+
+        if (inputValue && inputValue.length >= minSearch) {
+          if (waitTime > 0) {
+            if (timeoutPromise) {
+              $timeout.cancel(timeoutPromise);//cancel previous timeout
+            }
+            timeoutPromise = $timeout(function () {
+              getMatchesAsync(inputValue);
+            }, waitTime);
+          } else {
+            getMatchesAsync(inputValue);
+          }
+        } else {
+          isLoadingSetter(originalScope, false);
+          resetMatches();
+        }
+
+        if (isEditable) {
+          return inputValue;
+        } else {
+          if (!inputValue) {
+            // Reset in case user had typed something previously.
+            modelCtrl.$setValidity('editable', true);
+            return inputValue;
+          } else {
+            modelCtrl.$setValidity('editable', false);
+            return undefined;
+          }
+        }
+      });
+
+      modelCtrl.$formatters.push(function (modelValue) {
+
+        var candidateViewValue, emptyViewValue;
+        var locals = {};
+
+        if (inputFormatter) {
+
+          locals['$model'] = modelValue;
+          return inputFormatter(originalScope, locals);
+
+        } else {
+
+          //it might happen that we don't have enough info to properly render input value
+          //we need to check for this situation and simply return model value if we can't apply custom formatting
+          locals[parserResult.itemName] = modelValue;
+          candidateViewValue = parserResult.viewMapper(originalScope, locals);
+          locals[parserResult.itemName] = undefined;
+          emptyViewValue = parserResult.viewMapper(originalScope, locals);
+
+          return candidateViewValue!== emptyViewValue ? candidateViewValue : modelValue;
+        }
+      });
+
+      scope.select = function (activeIdx) {
+        //called from within the $digest() cycle
+        var locals = {};
+        var model, item;
+
+        locals[parserResult.itemName] = item = scope.matches[activeIdx].model;
+        model = parserResult.modelMapper(originalScope, locals);
+        $setModelValue(originalScope, model);
+        modelCtrl.$setValidity('editable', true);
+
+        onSelectCallback(originalScope, {
+          $item: item,
+          $model: model,
+          $label: parserResult.viewMapper(originalScope, locals)
+        });
+
+        resetMatches();
+
+        //return focus to the input element if a mach was selected via a mouse click event
+        element[0].focus();
+      };
+
+      //bind keyboard events: arrows up(38) / down(40), enter(13) and tab(9), esc(27)
+      element.bind('keydown', function (evt) {
+
+        //typeahead is open and an "interesting" key was pressed
+        if (scope.matches.length === 0 || HOT_KEYS.indexOf(evt.which) === -1) {
+          return;
+        }
+
+        evt.preventDefault();
+
+        if (evt.which === 40) {
+          scope.activeIdx = (scope.activeIdx + 1) % scope.matches.length;
+          scope.$digest();
+
+        } else if (evt.which === 38) {
+          scope.activeIdx = (scope.activeIdx ? scope.activeIdx : scope.matches.length) - 1;
+          scope.$digest();
+
+        } else if (evt.which === 13 || evt.which === 9) {
+          scope.$apply(function () {
+            scope.select(scope.activeIdx);
+          });
+
+        } else if (evt.which === 27) {
+          evt.stopPropagation();
+
+          resetMatches();
+          scope.$digest();
+        }
+      });
+
+      element.bind('blur', function (evt) {
+        hasFocus = false;
+      });
+
+      element.bind('focus', function (evt) {
+        hasFocus = true;
+      });
+
+      // Keep reference to click handler to unbind it.
+      var dismissClickHandler = function (evt) {
+        if (element[0] !== evt.target) {
+          resetMatches();
+          scope.$digest();
+        }
+      };
+
+      $document.bind('click', dismissClickHandler);
+
+      originalScope.$on('$destroy', function(){
+        $document.unbind('click', dismissClickHandler);
+      });
+
+      var $popup = $compile(popUpEl)(scope);
+      if ( appendToBody ) {
+        $document.find('body').append($popup);
+      } else {
+        element.after($popup);
+      }
+    }
+  };
+
+}])
+
+  .directive('typeaheadPopup', function () {
+    return {
+      restrict:'EA',
+      scope:{
+        matches:'=',
+        query:'=',
+        active:'=',
+        position:'=',
+        select:'&'
+      },
+      replace:true,
+      templateUrl:'template/typeahead/typeahead-popup.html',
+      link:function (scope, element, attrs) {
+
+        scope.templateUrl = attrs.templateUrl;
+
+        scope.isOpen = function () {
+          return scope.matches.length > 0;
+        };
+
+        scope.isActive = function (matchIdx) {
+          return scope.active == matchIdx;
+        };
+
+        scope.selectActive = function (matchIdx) {
+          scope.active = matchIdx;
+        };
+
+        scope.selectMatch = function (activeIdx) {
+          scope.select({activeIdx:activeIdx});
+        };
+      }
+    };
+  })
+
+  .directive('typeaheadMatch', ['$http', '$templateCache', '$compile', '$parse', function ($http, $templateCache, $compile, $parse) {
+    return {
+      restrict:'EA',
+      scope:{
+        index:'=',
+        match:'=',
+        query:'='
+      },
+      link:function (scope, element, attrs) {
+        var tplUrl = $parse(attrs.templateUrl)(scope.$parent) || 'template/typeahead/typeahead-match.html';
+        $http.get(tplUrl, {cache: $templateCache}).success(function(tplContent){
+           element.replaceWith($compile(tplContent.trim())(scope));
+        });
+      }
+    };
+  }])
+
+  .filter('typeaheadHighlight', function() {
+
+    function escapeRegexp(queryToEscape) {
+      return queryToEscape.replace(/([.?*+^$[\]\\(){}|-])/g, "\\$1");
+    }
+
+    return function(matchItem, query) {
+      return query ? matchItem.replace(new RegExp(escapeRegexp(query), 'gi'), '<strong>$&</strong>') : matchItem;
+    };
+  });
+
+angular.module("template/accordion/accordion-group.html", []).run(["$templateCache", function($templateCache) {
+  $templateCache.put("template/accordion/accordion-group.html",
+    "<dd>\n" +
+    "  <a ng-click=\"isOpen = !isOpen\" ng-class=\"{ active: isOpen }\"  accordion-transclude=\"heading\">{{heading}}</a>\n" +
+    "  <div class=\"content\" ng-class=\"{ active: isOpen }\" ng-transclude></div>\n" +
+    "</dd>\n" +
+    "");
+}]);
+
+angular.module("template/accordion/accordion.html", []).run(["$templateCache", function($templateCache) {
+  $templateCache.put("template/accordion/accordion.html",
+    "<dl class=\"accordion\" ng-transclude></dl>\n" +
+    "");
+}]);
+
+angular.module("template/alert/alert.html", []).run(["$templateCache", function($templateCache) {
+  $templateCache.put("template/alert/alert.html",
+    "<div class='alert-box' ng-class='(type || \"\")'>\n" +
+    "  <span ng-transclude></span>\n" +
+    "  <a ng-show='closeable' class='close' ng-click='close()'>&times;</a>\n" +
+    "</div>\n" +
+    "");
+}]);
+
+angular.module("template/modal/backdrop.html", []).run(["$templateCache", function($templateCache) {
+  $templateCache.put("template/modal/backdrop.html",
+    "<div class=\"reveal-modal-bg fade\" ng-class=\"{in: animate}\" ng-click=\"close($event)\" style=\"display: block\"></div>\n" +
+    "");
+}]);
+
+angular.module("template/modal/window.html", []).run(["$templateCache", function($templateCache) {
+  $templateCache.put("template/modal/window.html",
+    "<div tabindex=\"-1\" class=\"reveal-modal fade {{ windowClass }}\"\n" +
+    "  ng-class=\"{in: animate}\" style=\"display: block; visibility: visible\">\n" +
+    "  <div ng-transclude></div>\n" +
+    "</div>\n" +
+    "");
+}]);
+
+angular.module("template/pagination/pager.html", []).run(["$templateCache", function($templateCache) {
+  $templateCache.put("template/pagination/pager.html",
+    "<ul class=\"pagination\">\n" +
+    "  <li ng-repeat=\"page in pages\" class=\"arrow\" ng-class=\"{unavailable: page.disabled, left: page.previous, right: page.next}\"><a ng-click=\"selectPage(page.number)\">{{page.text}}</a></li>\n" +
+    "</ul>\n" +
+    "");
+}]);
+
+angular.module("template/pagination/pagination.html", []).run(["$templateCache", function($templateCache) {
+  $templateCache.put("template/pagination/pagination.html",
+    "<ul class=\"pagination\">\n" +
+    "  <li ng-repeat=\"page in pages\" ng-class=\"{arrow: $first || $last, current: page.active, unavailable: page.disabled}\"><a ng-click=\"selectPage(page.number)\">{{page.text}}</a></li>\n" +
+    "</ul>\n" +
+    "");
+}]);
+
+angular.module("template/tooltip/tooltip-html-unsafe-popup.html", []).run(["$templateCache", function($templateCache) {
+  $templateCache.put("template/tooltip/tooltip-html-unsafe-popup.html",
+    "<span class=\"tooltip tip-{{placement}}\"\n" +
+    "  ng-class=\"{ in: isOpen(), fade: animation() }\"\n" +
+    "  style=\"width: auto\">\n" +
+    "  <span bind-html-unsafe=\"content\"></span>\n" +
+    "  <span class=\"nub\"></span>\n" +
+    "</span>\n" +
+    "");
+}]);
+
+angular.module("template/tooltip/tooltip-popup.html", []).run(["$templateCache", function($templateCache) {
+  $templateCache.put("template/tooltip/tooltip-popup.html",
+    "<span class=\"tooltip tip-{{placement}}\"\n" +
+    "  ng-class=\"{ in: isOpen(), fade: animation() }\"\n" +
+    "  style=\"width: auto\">\n" +
+    "  <span ng-bind=\"content\"></span>\n" +
+    "  <span class=\"nub\"></span>\n" +
+    "</span>\n" +
+    "");
+}]);
+
+angular.module("template/popover/popover.html", []).run(["$templateCache", function($templateCache) {
+  $templateCache.put("template/popover/popover.html",
+    "<div class=\"joyride-tip-guide\" ng-class=\"{ in: isOpen(), fade: animation() }\">\n" +
+    "  <span class=\"joyride-nub\" ng-class=\"{\n" +
+    "    bottom: placement === 'top',\n" +
+    "    left: placement === 'right',\n" +
+    "    right: placement === 'left',\n" +
+    "    top: placement === 'bottom'\n" +
+    "  }\"></span>\n" +
+    "  <div class=\"joyride-content-wrapper\">\n" +
+    "    <h4 ng-bind=\"title\" ng-show=\"title\"></h4>\n" +
+    "    <p ng-bind=\"content\"></p>\n" +
+    "  </div>\n" +
+    "</div>\n" +
+    "");
+}]);
+
+angular.module("template/progressbar/bar.html", []).run(["$templateCache", function($templateCache) {
+  $templateCache.put("template/progressbar/bar.html",
+    "<span class=\"meter\" ng-transclude></span>\n" +
+    "");
+}]);
+
+angular.module("template/progressbar/progress.html", []).run(["$templateCache", function($templateCache) {
+  $templateCache.put("template/progressbar/progress.html",
+    "<div class=\"progress\" ng-class=\"type\" ng-transclude></div>\n" +
+    "");
+}]);
+
+angular.module("template/progressbar/progressbar.html", []).run(["$templateCache", function($templateCache) {
+  $templateCache.put("template/progressbar/progressbar.html",
+    "<div class=\"progress\" ng-class=\"type\">\n" +
+    "  <span class=\"meter\" ng-transclude></span>\n" +
+    "</div>\n" +
+    "");
+}]);
+
+angular.module("template/rating/rating.html", []).run(["$templateCache", function($templateCache) {
+  $templateCache.put("template/rating/rating.html",
+    "<span ng-mouseleave=\"reset()\">\n" +
+    "  <i ng-repeat=\"r in range\" ng-mouseenter=\"enter($index + 1)\" ng-click=\"rate($index + 1)\" class=\"fa\"\n" +
+    "    ng-class=\"$index < val && (r.stateOn || 'fa-star') || (r.stateOff || 'fa-star-o')\"></i>\n" +
+    "</span>\n" +
+    "");
+}]);
+
+angular.module("template/tabs/tab.html", []).run(["$templateCache", function($templateCache) {
+  $templateCache.put("template/tabs/tab.html",
+    "<dd ng-class=\"{active: active}\">\n" +
+    "  <a ng-click=\"select()\" tab-heading-transclude>{{heading}}</a>\n" +
+    "</dd>\n" +
+    "");
+}]);
+
+angular.module("template/tabs/tabset.html", []).run(["$templateCache", function($templateCache) {
+  $templateCache.put("template/tabs/tabset.html",
+    "<div class=\"tabbable\">\n" +
+    "  <dl class=\"tabs\" ng-class=\"{'vertical': vertical}\" ng-transclude></dl>\n" +
+    "  <div class=\"tabs-content\" ng-class=\"{'vertical': vertical}\">\n" +
+    "    <div class=\"content\" \n" +
+    "      ng-repeat=\"tab in tabs\" \n" +
+    "      ng-class=\"{active: tab.active}\">\n" +
+    "      <div tab-content-transclude=\"tab\"></div>\n" +
+    "    </div>\n" +
+    "  </div>\n" +
+    "</div>\n" +
+    "");
+}]);
+
+angular.module("template/topbar/has-dropdown.html", []).run(["$templateCache", function($templateCache) {
+  $templateCache.put("template/topbar/has-dropdown.html",
+    "<li class=\"has-dropdown\" ng-transclude></li>");
+}]);
+
+angular.module("template/topbar/toggle-top-bar.html", []).run(["$templateCache", function($templateCache) {
+  $templateCache.put("template/topbar/toggle-top-bar.html",
+    "<li class=\"toggle-topbar menu-icon\" ng-transclude></li>");
+}]);
+
+angular.module("template/topbar/top-bar-dropdown.html", []).run(["$templateCache", function($templateCache) {
+  $templateCache.put("template/topbar/top-bar-dropdown.html",
+    "<ul class=\"dropdown\" ng-transclude></ul>");
+}]);
+
+angular.module("template/topbar/top-bar-section.html", []).run(["$templateCache", function($templateCache) {
+  $templateCache.put("template/topbar/top-bar-section.html",
+    "<section class=\"top-bar-section\" ng-transclude></section>");
+}]);
+
+angular.module("template/topbar/top-bar.html", []).run(["$templateCache", function($templateCache) {
+  $templateCache.put("template/topbar/top-bar.html",
+    "<nav class=\"top-bar\" ng-transclude></nav>");
+}]);
+
+angular.module("template/tour/tour.html", []).run(["$templateCache", function($templateCache) {
+  $templateCache.put("template/tour/tour.html",
+    "<div class=\"joyride-tip-guide\" ng-class=\"{ in: isOpen(), fade: animation() }\">\n" +
+    "  <span class=\"joyride-nub\" ng-class=\"{\n" +
+    "    bottom: placement === 'top',\n" +
+    "    left: placement === 'right',\n" +
+    "    right: placement === 'left',\n" +
+    "    top: placement === 'bottom'\n" +
+    "  }\"></span>\n" +
+    "  <div class=\"joyride-content-wrapper\">\n" +
+    "    <h4 ng-bind=\"title\" ng-show=\"title\"></h4>\n" +
+    "    <p ng-bind=\"content\"></p>\n" +
+    "    <a class=\"small button joyride-next-tip\" ng-show=\"!isLastStep()\" ng-click=\"nextStep()\">Next</a>\n" +
+    "    <a class=\"small button joyride-next-tip\" ng-show=\"isLastStep()\" ng-click=\"endTour()\">End</a>\n" +
+    "    <a class=\"joyride-close-tip\" ng-click=\"endTour()\">&times;</a>\n" +
+    "  </div>\n" +
+    "</div>\n" +
+    "");
+}]);
+
+angular.module("template/typeahead/typeahead-match.html", []).run(["$templateCache", function($templateCache) {
+  $templateCache.put("template/typeahead/typeahead-match.html",
+    "<a tabindex=\"-1\" bind-html-unsafe=\"match.label | typeaheadHighlight:query\"></a>");
+}]);
+
+angular.module("template/typeahead/typeahead-popup.html", []).run(["$templateCache", function($templateCache) {
+  $templateCache.put("template/typeahead/typeahead-popup.html",
+    "<ul class=\"f-dropdown\" ng-style=\"{display: isOpen()&&'block' || 'none', top: position.top+'px', left: position.left+'px'}\">\n" +
+    "    <li ng-repeat=\"match in matches\" ng-class=\"{active: isActive($index) }\" ng-mouseenter=\"selectActive($index)\" ng-click=\"selectMatch($index)\">\n" +
+    "        <div typeahead-match index=\"$index\" match=\"match\" query=\"query\" template-url=\"templateUrl\"></div>\n" +
+    "    </li>\n" +
+    "</ul>\n" +
+    "");
+}]);
+
+},{}],13:[function(require,module,exports){
+/**
+ * angular-h-sweetalert is a simple wrapper of sweetalert.
+ *
+ * @author Howard.Zuo
+ * @date   Aug 7th, 2015
+ *
+ **/
+(function(angular, global) {
+    'use strict';
+
+    var definition = function(sweetAlert) {
+
+        var service = function() {
+
+            this.show = function() {
+                var args = [].slice.call(arguments, 0);
+                sweetAlert.apply(undefined, args);
+            };
+
+            angular.forEach(
+                ['showInputError', 'close'],
+                function(func) {
+                    this[func] = function() {
+                        var args = [].slice.call(arguments, 0);
+                        sweetAlert[func].apply(undefined, args);
+                    };
+                }, this);
+
+            this.isShown = function() {
+                var sweetAlertEl;
+
+                angular.forEach(document.getElementsByClassName('sweet-alert'), function(el) {
+                    sweetAlertEl = angular.element(el);
+                });
+
+                return sweetAlertEl && sweetAlertEl.hasClass('visible');
+            };
+        };
+
+        var modName = 'hSweetAlert';
+
+        var mod = angular.module(modName, []);
+        mod.service('sweet', [service]);
+
+        return modName;
+    };
+
+    if (typeof exports === 'object') {
+        module.exports = definition(require('sweetalert'));
+    } else if (typeof define === 'function' && define.amd) {
+        define(['sweetAlert'], definition);
+    } else {
+        definition(global.sweetAlert);
+    }
+
+}(angular, window));
+
+},{"sweetalert":27}],14:[function(require,module,exports){
 /**
  * State-based routing for AngularJS
  * @version v0.2.15
@@ -4802,7 +8501,7 @@ angular.module('ui.router.state')
   .filter('isState', $IsStateFilter)
   .filter('includedByState', $IncludedByStateFilter);
 })(window, window.angular);
-},{}],13:[function(require,module,exports){
+},{}],15:[function(require,module,exports){
 /**
  * @license AngularJS v1.4.7
  * (c) 2010-2015 Google, Inc. http://angularjs.org
@@ -33707,11 +37406,11 @@ $provide.value("$locale", {
 })(window, document);
 
 !window.angular.$$csp().noInlineStyle && window.angular.element(document.head).prepend('<style type="text/css">@charset "UTF-8";[ng\\:cloak],[ng-cloak],[data-ng-cloak],[x-ng-cloak],.ng-cloak,.x-ng-cloak,.ng-hide:not(.ng-hide-animate){display:none !important;}ng\\:form{display:block;}.ng-animate-shim{visibility:hidden;}.ng-anchor{position:absolute;}</style>');
-},{}],14:[function(require,module,exports){
+},{}],16:[function(require,module,exports){
 require('./angular');
 module.exports = angular;
 
-},{"./angular":13}],15:[function(require,module,exports){
+},{"./angular":15}],17:[function(require,module,exports){
 /*!
  * jQuery JavaScript Library v2.1.4
  * http://jquery.com/
@@ -42923,7 +46622,7 @@ return jQuery;
 
 }));
 
-},{}],16:[function(require,module,exports){
+},{}],18:[function(require,module,exports){
 //! moment.js
 //! version : 2.10.6
 //! authors : Tim Wood, Iskren Chernev, Moment.js contributors
@@ -46119,7 +49818,1263 @@ return jQuery;
     return _moment;
 
 }));
-},{}],17:[function(require,module,exports){
+},{}],19:[function(require,module,exports){
+'use strict';
+
+Object.defineProperty(exports, '__esModule', {
+  value: true
+});
+var defaultParams = {
+  title: '',
+  text: '',
+  type: null,
+  allowOutsideClick: false,
+  showConfirmButton: true,
+  showCancelButton: false,
+  closeOnConfirm: true,
+  closeOnCancel: true,
+  confirmButtonText: 'OK',
+  confirmButtonColor: '#8CD4F5',
+  cancelButtonText: 'Cancel',
+  imageUrl: null,
+  imageSize: null,
+  timer: null,
+  customClass: '',
+  html: false,
+  animation: true,
+  allowEscapeKey: true,
+  inputType: 'text',
+  inputPlaceholder: '',
+  inputValue: '',
+  showLoaderOnConfirm: false
+};
+
+exports['default'] = defaultParams;
+module.exports = exports['default'];
+},{}],20:[function(require,module,exports){
+'use strict';
+
+Object.defineProperty(exports, '__esModule', {
+  value: true
+});
+
+var _colorLuminance = require('./utils');
+
+var _getModal = require('./handle-swal-dom');
+
+var _hasClass$isDescendant = require('./handle-dom');
+
+/*
+ * User clicked on "Confirm"/"OK" or "Cancel"
+ */
+var handleButton = function handleButton(event, params, modal) {
+  var e = event || window.event;
+  var target = e.target || e.srcElement;
+
+  var targetedConfirm = target.className.indexOf('confirm') !== -1;
+  var targetedOverlay = target.className.indexOf('sweet-overlay') !== -1;
+  var modalIsVisible = _hasClass$isDescendant.hasClass(modal, 'visible');
+  var doneFunctionExists = params.doneFunction && modal.getAttribute('data-has-done-function') === 'true';
+
+  // Since the user can change the background-color of the confirm button programmatically,
+  // we must calculate what the color should be on hover/active
+  var normalColor, hoverColor, activeColor;
+  if (targetedConfirm && params.confirmButtonColor) {
+    normalColor = params.confirmButtonColor;
+    hoverColor = _colorLuminance.colorLuminance(normalColor, -0.04);
+    activeColor = _colorLuminance.colorLuminance(normalColor, -0.14);
+  }
+
+  function shouldSetConfirmButtonColor(color) {
+    if (targetedConfirm && params.confirmButtonColor) {
+      target.style.backgroundColor = color;
+    }
+  }
+
+  switch (e.type) {
+    case 'mouseover':
+      shouldSetConfirmButtonColor(hoverColor);
+      break;
+
+    case 'mouseout':
+      shouldSetConfirmButtonColor(normalColor);
+      break;
+
+    case 'mousedown':
+      shouldSetConfirmButtonColor(activeColor);
+      break;
+
+    case 'mouseup':
+      shouldSetConfirmButtonColor(hoverColor);
+      break;
+
+    case 'focus':
+      var $confirmButton = modal.querySelector('button.confirm');
+      var $cancelButton = modal.querySelector('button.cancel');
+
+      if (targetedConfirm) {
+        $cancelButton.style.boxShadow = 'none';
+      } else {
+        $confirmButton.style.boxShadow = 'none';
+      }
+      break;
+
+    case 'click':
+      var clickedOnModal = modal === target;
+      var clickedOnModalChild = _hasClass$isDescendant.isDescendant(modal, target);
+
+      // Ignore click outside if allowOutsideClick is false
+      if (!clickedOnModal && !clickedOnModalChild && modalIsVisible && !params.allowOutsideClick) {
+        break;
+      }
+
+      if (targetedConfirm && doneFunctionExists && modalIsVisible) {
+        handleConfirm(modal, params);
+      } else if (doneFunctionExists && modalIsVisible || targetedOverlay) {
+        handleCancel(modal, params);
+      } else if (_hasClass$isDescendant.isDescendant(modal, target) && target.tagName === 'BUTTON') {
+        sweetAlert.close();
+      }
+      break;
+  }
+};
+
+/*
+ *  User clicked on "Confirm"/"OK"
+ */
+var handleConfirm = function handleConfirm(modal, params) {
+  var callbackValue = true;
+
+  if (_hasClass$isDescendant.hasClass(modal, 'show-input')) {
+    callbackValue = modal.querySelector('input').value;
+
+    if (!callbackValue) {
+      callbackValue = '';
+    }
+  }
+
+  params.doneFunction(callbackValue);
+
+  if (params.closeOnConfirm) {
+    sweetAlert.close();
+  }
+  // Disable cancel and confirm button if the parameter is true
+  if (params.showLoaderOnConfirm) {
+    sweetAlert.disableButtons();
+  }
+};
+
+/*
+ *  User clicked on "Cancel"
+ */
+var handleCancel = function handleCancel(modal, params) {
+  // Check if callback function expects a parameter (to track cancel actions)
+  var functionAsStr = String(params.doneFunction).replace(/\s/g, '');
+  var functionHandlesCancel = functionAsStr.substring(0, 9) === 'function(' && functionAsStr.substring(9, 10) !== ')';
+
+  if (functionHandlesCancel) {
+    params.doneFunction(false);
+  }
+
+  if (params.closeOnCancel) {
+    sweetAlert.close();
+  }
+};
+
+exports['default'] = {
+  handleButton: handleButton,
+  handleConfirm: handleConfirm,
+  handleCancel: handleCancel
+};
+module.exports = exports['default'];
+},{"./handle-dom":21,"./handle-swal-dom":23,"./utils":26}],21:[function(require,module,exports){
+'use strict';
+
+Object.defineProperty(exports, '__esModule', {
+  value: true
+});
+var hasClass = function hasClass(elem, className) {
+  return new RegExp(' ' + className + ' ').test(' ' + elem.className + ' ');
+};
+
+var addClass = function addClass(elem, className) {
+  if (!hasClass(elem, className)) {
+    elem.className += ' ' + className;
+  }
+};
+
+var removeClass = function removeClass(elem, className) {
+  var newClass = ' ' + elem.className.replace(/[\t\r\n]/g, ' ') + ' ';
+  if (hasClass(elem, className)) {
+    while (newClass.indexOf(' ' + className + ' ') >= 0) {
+      newClass = newClass.replace(' ' + className + ' ', ' ');
+    }
+    elem.className = newClass.replace(/^\s+|\s+$/g, '');
+  }
+};
+
+var escapeHtml = function escapeHtml(str) {
+  var div = document.createElement('div');
+  div.appendChild(document.createTextNode(str));
+  return div.innerHTML;
+};
+
+var _show = function _show(elem) {
+  elem.style.opacity = '';
+  elem.style.display = 'block';
+};
+
+var show = function show(elems) {
+  if (elems && !elems.length) {
+    return _show(elems);
+  }
+  for (var i = 0; i < elems.length; ++i) {
+    _show(elems[i]);
+  }
+};
+
+var _hide = function _hide(elem) {
+  elem.style.opacity = '';
+  elem.style.display = 'none';
+};
+
+var hide = function hide(elems) {
+  if (elems && !elems.length) {
+    return _hide(elems);
+  }
+  for (var i = 0; i < elems.length; ++i) {
+    _hide(elems[i]);
+  }
+};
+
+var isDescendant = function isDescendant(parent, child) {
+  var node = child.parentNode;
+  while (node !== null) {
+    if (node === parent) {
+      return true;
+    }
+    node = node.parentNode;
+  }
+  return false;
+};
+
+var getTopMargin = function getTopMargin(elem) {
+  elem.style.left = '-9999px';
+  elem.style.display = 'block';
+
+  var height = elem.clientHeight,
+      padding;
+  if (typeof getComputedStyle !== 'undefined') {
+    // IE 8
+    padding = parseInt(getComputedStyle(elem).getPropertyValue('padding-top'), 10);
+  } else {
+    padding = parseInt(elem.currentStyle.padding);
+  }
+
+  elem.style.left = '';
+  elem.style.display = 'none';
+  return '-' + parseInt((height + padding) / 2) + 'px';
+};
+
+var fadeIn = function fadeIn(elem, interval) {
+  if (+elem.style.opacity < 1) {
+    interval = interval || 16;
+    elem.style.opacity = 0;
+    elem.style.display = 'block';
+    var last = +new Date();
+    var tick = (function (_tick) {
+      function tick() {
+        return _tick.apply(this, arguments);
+      }
+
+      tick.toString = function () {
+        return _tick.toString();
+      };
+
+      return tick;
+    })(function () {
+      elem.style.opacity = +elem.style.opacity + (new Date() - last) / 100;
+      last = +new Date();
+
+      if (+elem.style.opacity < 1) {
+        setTimeout(tick, interval);
+      }
+    });
+    tick();
+  }
+  elem.style.display = 'block'; //fallback IE8
+};
+
+var fadeOut = function fadeOut(elem, interval) {
+  interval = interval || 16;
+  elem.style.opacity = 1;
+  var last = +new Date();
+  var tick = (function (_tick2) {
+    function tick() {
+      return _tick2.apply(this, arguments);
+    }
+
+    tick.toString = function () {
+      return _tick2.toString();
+    };
+
+    return tick;
+  })(function () {
+    elem.style.opacity = +elem.style.opacity - (new Date() - last) / 100;
+    last = +new Date();
+
+    if (+elem.style.opacity > 0) {
+      setTimeout(tick, interval);
+    } else {
+      elem.style.display = 'none';
+    }
+  });
+  tick();
+};
+
+var fireClick = function fireClick(node) {
+  // Taken from http://www.nonobtrusive.com/2011/11/29/programatically-fire-crossbrowser-click-event-with-javascript/
+  // Then fixed for today's Chrome browser.
+  if (typeof MouseEvent === 'function') {
+    // Up-to-date approach
+    var mevt = new MouseEvent('click', {
+      view: window,
+      bubbles: false,
+      cancelable: true
+    });
+    node.dispatchEvent(mevt);
+  } else if (document.createEvent) {
+    // Fallback
+    var evt = document.createEvent('MouseEvents');
+    evt.initEvent('click', false, false);
+    node.dispatchEvent(evt);
+  } else if (document.createEventObject) {
+    node.fireEvent('onclick');
+  } else if (typeof node.onclick === 'function') {
+    node.onclick();
+  }
+};
+
+var stopEventPropagation = function stopEventPropagation(e) {
+  // In particular, make sure the space bar doesn't scroll the main window.
+  if (typeof e.stopPropagation === 'function') {
+    e.stopPropagation();
+    e.preventDefault();
+  } else if (window.event && window.event.hasOwnProperty('cancelBubble')) {
+    window.event.cancelBubble = true;
+  }
+};
+
+exports.hasClass = hasClass;
+exports.addClass = addClass;
+exports.removeClass = removeClass;
+exports.escapeHtml = escapeHtml;
+exports._show = _show;
+exports.show = show;
+exports._hide = _hide;
+exports.hide = hide;
+exports.isDescendant = isDescendant;
+exports.getTopMargin = getTopMargin;
+exports.fadeIn = fadeIn;
+exports.fadeOut = fadeOut;
+exports.fireClick = fireClick;
+exports.stopEventPropagation = stopEventPropagation;
+},{}],22:[function(require,module,exports){
+'use strict';
+
+Object.defineProperty(exports, '__esModule', {
+  value: true
+});
+
+var _stopEventPropagation$fireClick = require('./handle-dom');
+
+var _setFocusStyle = require('./handle-swal-dom');
+
+var handleKeyDown = function handleKeyDown(event, params, modal) {
+  var e = event || window.event;
+  var keyCode = e.keyCode || e.which;
+
+  var $okButton = modal.querySelector('button.confirm');
+  var $cancelButton = modal.querySelector('button.cancel');
+  var $modalButtons = modal.querySelectorAll('button[tabindex]');
+
+  if ([9, 13, 32, 27].indexOf(keyCode) === -1) {
+    // Don't do work on keys we don't care about.
+    return;
+  }
+
+  var $targetElement = e.target || e.srcElement;
+
+  var btnIndex = -1; // Find the button - note, this is a nodelist, not an array.
+  for (var i = 0; i < $modalButtons.length; i++) {
+    if ($targetElement === $modalButtons[i]) {
+      btnIndex = i;
+      break;
+    }
+  }
+
+  if (keyCode === 9) {
+    // TAB
+    if (btnIndex === -1) {
+      // No button focused. Jump to the confirm button.
+      $targetElement = $okButton;
+    } else {
+      // Cycle to the next button
+      if (btnIndex === $modalButtons.length - 1) {
+        $targetElement = $modalButtons[0];
+      } else {
+        $targetElement = $modalButtons[btnIndex + 1];
+      }
+    }
+
+    _stopEventPropagation$fireClick.stopEventPropagation(e);
+    $targetElement.focus();
+
+    if (params.confirmButtonColor) {
+      _setFocusStyle.setFocusStyle($targetElement, params.confirmButtonColor);
+    }
+  } else {
+    if (keyCode === 13) {
+      if ($targetElement.tagName === 'INPUT') {
+        $targetElement = $okButton;
+        $okButton.focus();
+      }
+
+      if (btnIndex === -1) {
+        // ENTER/SPACE clicked outside of a button.
+        $targetElement = $okButton;
+      } else {
+        // Do nothing - let the browser handle it.
+        $targetElement = undefined;
+      }
+    } else if (keyCode === 27 && params.allowEscapeKey === true) {
+      $targetElement = $cancelButton;
+      _stopEventPropagation$fireClick.fireClick($targetElement, e);
+    } else {
+      // Fallback - let the browser handle it.
+      $targetElement = undefined;
+    }
+  }
+};
+
+exports['default'] = handleKeyDown;
+module.exports = exports['default'];
+},{"./handle-dom":21,"./handle-swal-dom":23}],23:[function(require,module,exports){
+'use strict';
+
+var _interopRequireWildcard = function (obj) { return obj && obj.__esModule ? obj : { 'default': obj }; };
+
+Object.defineProperty(exports, '__esModule', {
+  value: true
+});
+
+var _hexToRgb = require('./utils');
+
+var _removeClass$getTopMargin$fadeIn$show$addClass = require('./handle-dom');
+
+var _defaultParams = require('./default-params');
+
+var _defaultParams2 = _interopRequireWildcard(_defaultParams);
+
+/*
+ * Add modal + overlay to DOM
+ */
+
+var _injectedHTML = require('./injected-html');
+
+var _injectedHTML2 = _interopRequireWildcard(_injectedHTML);
+
+var modalClass = '.sweet-alert';
+var overlayClass = '.sweet-overlay';
+
+var sweetAlertInitialize = function sweetAlertInitialize() {
+  var sweetWrap = document.createElement('div');
+  sweetWrap.innerHTML = _injectedHTML2['default'];
+
+  // Append elements to body
+  while (sweetWrap.firstChild) {
+    document.body.appendChild(sweetWrap.firstChild);
+  }
+};
+
+/*
+ * Get DOM element of modal
+ */
+var getModal = (function (_getModal) {
+  function getModal() {
+    return _getModal.apply(this, arguments);
+  }
+
+  getModal.toString = function () {
+    return _getModal.toString();
+  };
+
+  return getModal;
+})(function () {
+  var $modal = document.querySelector(modalClass);
+
+  if (!$modal) {
+    sweetAlertInitialize();
+    $modal = getModal();
+  }
+
+  return $modal;
+});
+
+/*
+ * Get DOM element of input (in modal)
+ */
+var getInput = function getInput() {
+  var $modal = getModal();
+  if ($modal) {
+    return $modal.querySelector('input');
+  }
+};
+
+/*
+ * Get DOM element of overlay
+ */
+var getOverlay = function getOverlay() {
+  return document.querySelector(overlayClass);
+};
+
+/*
+ * Add box-shadow style to button (depending on its chosen bg-color)
+ */
+var setFocusStyle = function setFocusStyle($button, bgColor) {
+  var rgbColor = _hexToRgb.hexToRgb(bgColor);
+  $button.style.boxShadow = '0 0 2px rgba(' + rgbColor + ', 0.8), inset 0 0 0 1px rgba(0, 0, 0, 0.05)';
+};
+
+/*
+ * Animation when opening modal
+ */
+var openModal = function openModal(callback) {
+  var $modal = getModal();
+  _removeClass$getTopMargin$fadeIn$show$addClass.fadeIn(getOverlay(), 10);
+  _removeClass$getTopMargin$fadeIn$show$addClass.show($modal);
+  _removeClass$getTopMargin$fadeIn$show$addClass.addClass($modal, 'showSweetAlert');
+  _removeClass$getTopMargin$fadeIn$show$addClass.removeClass($modal, 'hideSweetAlert');
+
+  window.previousActiveElement = document.activeElement;
+  var $okButton = $modal.querySelector('button.confirm');
+  $okButton.focus();
+
+  setTimeout(function () {
+    _removeClass$getTopMargin$fadeIn$show$addClass.addClass($modal, 'visible');
+  }, 500);
+
+  var timer = $modal.getAttribute('data-timer');
+
+  if (timer !== 'null' && timer !== '') {
+    var timerCallback = callback;
+    $modal.timeout = setTimeout(function () {
+      var doneFunctionExists = (timerCallback || null) && $modal.getAttribute('data-has-done-function') === 'true';
+      if (doneFunctionExists) {
+        timerCallback(null);
+      } else {
+        sweetAlert.close();
+      }
+    }, timer);
+  }
+};
+
+/*
+ * Reset the styling of the input
+ * (for example if errors have been shown)
+ */
+var resetInput = function resetInput() {
+  var $modal = getModal();
+  var $input = getInput();
+
+  _removeClass$getTopMargin$fadeIn$show$addClass.removeClass($modal, 'show-input');
+  $input.value = _defaultParams2['default'].inputValue;
+  $input.setAttribute('type', _defaultParams2['default'].inputType);
+  $input.setAttribute('placeholder', _defaultParams2['default'].inputPlaceholder);
+
+  resetInputError();
+};
+
+var resetInputError = function resetInputError(event) {
+  // If press enter => ignore
+  if (event && event.keyCode === 13) {
+    return false;
+  }
+
+  var $modal = getModal();
+
+  var $errorIcon = $modal.querySelector('.sa-input-error');
+  _removeClass$getTopMargin$fadeIn$show$addClass.removeClass($errorIcon, 'show');
+
+  var $errorContainer = $modal.querySelector('.sa-error-container');
+  _removeClass$getTopMargin$fadeIn$show$addClass.removeClass($errorContainer, 'show');
+};
+
+/*
+ * Set "margin-top"-property on modal based on its computed height
+ */
+var fixVerticalPosition = function fixVerticalPosition() {
+  var $modal = getModal();
+  $modal.style.marginTop = _removeClass$getTopMargin$fadeIn$show$addClass.getTopMargin(getModal());
+};
+
+exports.sweetAlertInitialize = sweetAlertInitialize;
+exports.getModal = getModal;
+exports.getOverlay = getOverlay;
+exports.getInput = getInput;
+exports.setFocusStyle = setFocusStyle;
+exports.openModal = openModal;
+exports.resetInput = resetInput;
+exports.resetInputError = resetInputError;
+exports.fixVerticalPosition = fixVerticalPosition;
+},{"./default-params":19,"./handle-dom":21,"./injected-html":24,"./utils":26}],24:[function(require,module,exports){
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+var injectedHTML =
+
+// Dark overlay
+"<div class=\"sweet-overlay\" tabIndex=\"-1\"></div>" +
+
+// Modal
+"<div class=\"sweet-alert\">" +
+
+// Error icon
+"<div class=\"sa-icon sa-error\">\n      <span class=\"sa-x-mark\">\n        <span class=\"sa-line sa-left\"></span>\n        <span class=\"sa-line sa-right\"></span>\n      </span>\n    </div>" +
+
+// Warning icon
+"<div class=\"sa-icon sa-warning\">\n      <span class=\"sa-body\"></span>\n      <span class=\"sa-dot\"></span>\n    </div>" +
+
+// Info icon
+"<div class=\"sa-icon sa-info\"></div>" +
+
+// Success icon
+"<div class=\"sa-icon sa-success\">\n      <span class=\"sa-line sa-tip\"></span>\n      <span class=\"sa-line sa-long\"></span>\n\n      <div class=\"sa-placeholder\"></div>\n      <div class=\"sa-fix\"></div>\n    </div>" + "<div class=\"sa-icon sa-custom\"></div>" +
+
+// Title, text and input
+"<h2>Title</h2>\n    <p>Text</p>\n    <fieldset>\n      <input type=\"text\" tabIndex=\"3\" />\n      <div class=\"sa-input-error\"></div>\n    </fieldset>" +
+
+// Input errors
+"<div class=\"sa-error-container\">\n      <div class=\"icon\">!</div>\n      <p>Not valid!</p>\n    </div>" +
+
+// Cancel and confirm buttons
+"<div class=\"sa-button-container\">\n      <button class=\"cancel\" tabIndex=\"2\">Cancel</button>\n      <div class=\"sa-confirm-button-container\">\n        <button class=\"confirm\" tabIndex=\"1\">OK</button>" +
+
+// Loading animation
+"<div class=\"la-ball-fall\">\n          <div></div>\n          <div></div>\n          <div></div>\n        </div>\n      </div>\n    </div>" +
+
+// End of modal
+"</div>";
+
+exports["default"] = injectedHTML;
+module.exports = exports["default"];
+},{}],25:[function(require,module,exports){
+'use strict';
+
+Object.defineProperty(exports, '__esModule', {
+  value: true
+});
+
+var _isIE8 = require('./utils');
+
+var _getModal$getInput$setFocusStyle = require('./handle-swal-dom');
+
+var _hasClass$addClass$removeClass$escapeHtml$_show$show$_hide$hide = require('./handle-dom');
+
+var alertTypes = ['error', 'warning', 'info', 'success', 'input', 'prompt'];
+
+/*
+ * Set type, text and actions on modal
+ */
+var setParameters = function setParameters(params) {
+  var modal = _getModal$getInput$setFocusStyle.getModal();
+
+  var $title = modal.querySelector('h2');
+  var $text = modal.querySelector('p');
+  var $cancelBtn = modal.querySelector('button.cancel');
+  var $confirmBtn = modal.querySelector('button.confirm');
+
+  /*
+   * Title
+   */
+  $title.innerHTML = params.html ? params.title : _hasClass$addClass$removeClass$escapeHtml$_show$show$_hide$hide.escapeHtml(params.title).split('\n').join('<br>');
+
+  /*
+   * Text
+   */
+  $text.innerHTML = params.html ? params.text : _hasClass$addClass$removeClass$escapeHtml$_show$show$_hide$hide.escapeHtml(params.text || '').split('\n').join('<br>');
+  if (params.text) _hasClass$addClass$removeClass$escapeHtml$_show$show$_hide$hide.show($text);
+
+  /*
+   * Custom class
+   */
+  if (params.customClass) {
+    _hasClass$addClass$removeClass$escapeHtml$_show$show$_hide$hide.addClass(modal, params.customClass);
+    modal.setAttribute('data-custom-class', params.customClass);
+  } else {
+    // Find previously set classes and remove them
+    var customClass = modal.getAttribute('data-custom-class');
+    _hasClass$addClass$removeClass$escapeHtml$_show$show$_hide$hide.removeClass(modal, customClass);
+    modal.setAttribute('data-custom-class', '');
+  }
+
+  /*
+   * Icon
+   */
+  _hasClass$addClass$removeClass$escapeHtml$_show$show$_hide$hide.hide(modal.querySelectorAll('.sa-icon'));
+
+  if (params.type && !_isIE8.isIE8()) {
+    var _ret = (function () {
+
+      var validType = false;
+
+      for (var i = 0; i < alertTypes.length; i++) {
+        if (params.type === alertTypes[i]) {
+          validType = true;
+          break;
+        }
+      }
+
+      if (!validType) {
+        logStr('Unknown alert type: ' + params.type);
+        return {
+          v: false
+        };
+      }
+
+      var typesWithIcons = ['success', 'error', 'warning', 'info'];
+      var $icon = undefined;
+
+      if (typesWithIcons.indexOf(params.type) !== -1) {
+        $icon = modal.querySelector('.sa-icon.' + 'sa-' + params.type);
+        _hasClass$addClass$removeClass$escapeHtml$_show$show$_hide$hide.show($icon);
+      }
+
+      var $input = _getModal$getInput$setFocusStyle.getInput();
+
+      // Animate icon
+      switch (params.type) {
+
+        case 'success':
+          _hasClass$addClass$removeClass$escapeHtml$_show$show$_hide$hide.addClass($icon, 'animate');
+          _hasClass$addClass$removeClass$escapeHtml$_show$show$_hide$hide.addClass($icon.querySelector('.sa-tip'), 'animateSuccessTip');
+          _hasClass$addClass$removeClass$escapeHtml$_show$show$_hide$hide.addClass($icon.querySelector('.sa-long'), 'animateSuccessLong');
+          break;
+
+        case 'error':
+          _hasClass$addClass$removeClass$escapeHtml$_show$show$_hide$hide.addClass($icon, 'animateErrorIcon');
+          _hasClass$addClass$removeClass$escapeHtml$_show$show$_hide$hide.addClass($icon.querySelector('.sa-x-mark'), 'animateXMark');
+          break;
+
+        case 'warning':
+          _hasClass$addClass$removeClass$escapeHtml$_show$show$_hide$hide.addClass($icon, 'pulseWarning');
+          _hasClass$addClass$removeClass$escapeHtml$_show$show$_hide$hide.addClass($icon.querySelector('.sa-body'), 'pulseWarningIns');
+          _hasClass$addClass$removeClass$escapeHtml$_show$show$_hide$hide.addClass($icon.querySelector('.sa-dot'), 'pulseWarningIns');
+          break;
+
+        case 'input':
+        case 'prompt':
+          $input.setAttribute('type', params.inputType);
+          $input.value = params.inputValue;
+          $input.setAttribute('placeholder', params.inputPlaceholder);
+          _hasClass$addClass$removeClass$escapeHtml$_show$show$_hide$hide.addClass(modal, 'show-input');
+          setTimeout(function () {
+            $input.focus();
+            $input.addEventListener('keyup', swal.resetInputError);
+          }, 400);
+          break;
+      }
+    })();
+
+    if (typeof _ret === 'object') {
+      return _ret.v;
+    }
+  }
+
+  /*
+   * Custom image
+   */
+  if (params.imageUrl) {
+    var $customIcon = modal.querySelector('.sa-icon.sa-custom');
+
+    $customIcon.style.backgroundImage = 'url(' + params.imageUrl + ')';
+    _hasClass$addClass$removeClass$escapeHtml$_show$show$_hide$hide.show($customIcon);
+
+    var _imgWidth = 80;
+    var _imgHeight = 80;
+
+    if (params.imageSize) {
+      var dimensions = params.imageSize.toString().split('x');
+      var imgWidth = dimensions[0];
+      var imgHeight = dimensions[1];
+
+      if (!imgWidth || !imgHeight) {
+        logStr('Parameter imageSize expects value with format WIDTHxHEIGHT, got ' + params.imageSize);
+      } else {
+        _imgWidth = imgWidth;
+        _imgHeight = imgHeight;
+      }
+    }
+
+    $customIcon.setAttribute('style', $customIcon.getAttribute('style') + 'width:' + _imgWidth + 'px; height:' + _imgHeight + 'px');
+  }
+
+  /*
+   * Show cancel button?
+   */
+  modal.setAttribute('data-has-cancel-button', params.showCancelButton);
+  if (params.showCancelButton) {
+    $cancelBtn.style.display = 'inline-block';
+  } else {
+    _hasClass$addClass$removeClass$escapeHtml$_show$show$_hide$hide.hide($cancelBtn);
+  }
+
+  /*
+   * Show confirm button?
+   */
+  modal.setAttribute('data-has-confirm-button', params.showConfirmButton);
+  if (params.showConfirmButton) {
+    $confirmBtn.style.display = 'inline-block';
+  } else {
+    _hasClass$addClass$removeClass$escapeHtml$_show$show$_hide$hide.hide($confirmBtn);
+  }
+
+  /*
+   * Custom text on cancel/confirm buttons
+   */
+  if (params.cancelButtonText) {
+    $cancelBtn.innerHTML = _hasClass$addClass$removeClass$escapeHtml$_show$show$_hide$hide.escapeHtml(params.cancelButtonText);
+  }
+  if (params.confirmButtonText) {
+    $confirmBtn.innerHTML = _hasClass$addClass$removeClass$escapeHtml$_show$show$_hide$hide.escapeHtml(params.confirmButtonText);
+  }
+
+  /*
+   * Custom color on confirm button
+   */
+  if (params.confirmButtonColor) {
+    // Set confirm button to selected background color
+    $confirmBtn.style.backgroundColor = params.confirmButtonColor;
+
+    // Set the confirm button color to the loading ring
+    $confirmBtn.style.borderLeftColor = params.confirmLoadingButtonColor;
+    $confirmBtn.style.borderRightColor = params.confirmLoadingButtonColor;
+
+    // Set box-shadow to default focused button
+    _getModal$getInput$setFocusStyle.setFocusStyle($confirmBtn, params.confirmButtonColor);
+  }
+
+  /*
+   * Allow outside click
+   */
+  modal.setAttribute('data-allow-outside-click', params.allowOutsideClick);
+
+  /*
+   * Callback function
+   */
+  var hasDoneFunction = params.doneFunction ? true : false;
+  modal.setAttribute('data-has-done-function', hasDoneFunction);
+
+  /*
+   * Animation
+   */
+  if (!params.animation) {
+    modal.setAttribute('data-animation', 'none');
+  } else if (typeof params.animation === 'string') {
+    modal.setAttribute('data-animation', params.animation); // Custom animation
+  } else {
+    modal.setAttribute('data-animation', 'pop');
+  }
+
+  /*
+   * Timer
+   */
+  modal.setAttribute('data-timer', params.timer);
+};
+
+exports['default'] = setParameters;
+module.exports = exports['default'];
+},{"./handle-dom":21,"./handle-swal-dom":23,"./utils":26}],26:[function(require,module,exports){
+'use strict';
+
+Object.defineProperty(exports, '__esModule', {
+  value: true
+});
+/*
+ * Allow user to pass their own params
+ */
+var extend = function extend(a, b) {
+  for (var key in b) {
+    if (b.hasOwnProperty(key)) {
+      a[key] = b[key];
+    }
+  }
+  return a;
+};
+
+/*
+ * Convert HEX codes to RGB values (#000000 -> rgb(0,0,0))
+ */
+var hexToRgb = function hexToRgb(hex) {
+  var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+  return result ? parseInt(result[1], 16) + ', ' + parseInt(result[2], 16) + ', ' + parseInt(result[3], 16) : null;
+};
+
+/*
+ * Check if the user is using Internet Explorer 8 (for fallbacks)
+ */
+var isIE8 = function isIE8() {
+  return window.attachEvent && !window.addEventListener;
+};
+
+/*
+ * IE compatible logging for developers
+ */
+var logStr = function logStr(string) {
+  if (window.console) {
+    // IE...
+    window.console.log('SweetAlert: ' + string);
+  }
+};
+
+/*
+ * Set hover, active and focus-states for buttons 
+ * (source: http://www.sitepoint.com/javascript-generate-lighter-darker-color)
+ */
+var colorLuminance = function colorLuminance(hex, lum) {
+  // Validate hex string
+  hex = String(hex).replace(/[^0-9a-f]/gi, '');
+  if (hex.length < 6) {
+    hex = hex[0] + hex[0] + hex[1] + hex[1] + hex[2] + hex[2];
+  }
+  lum = lum || 0;
+
+  // Convert to decimal and change luminosity
+  var rgb = '#';
+  var c;
+  var i;
+
+  for (i = 0; i < 3; i++) {
+    c = parseInt(hex.substr(i * 2, 2), 16);
+    c = Math.round(Math.min(Math.max(0, c + c * lum), 255)).toString(16);
+    rgb += ('00' + c).substr(c.length);
+  }
+
+  return rgb;
+};
+
+exports.extend = extend;
+exports.hexToRgb = hexToRgb;
+exports.isIE8 = isIE8;
+exports.logStr = logStr;
+exports.colorLuminance = colorLuminance;
+},{}],27:[function(require,module,exports){
+'use strict';
+
+var _interopRequireWildcard = function (obj) { return obj && obj.__esModule ? obj : { 'default': obj }; };
+
+Object.defineProperty(exports, '__esModule', {
+  value: true
+});
+// SweetAlert
+// 2014-2015 (c) - Tristan Edwards
+// github.com/t4t5/sweetalert
+
+/*
+ * jQuery-like functions for manipulating the DOM
+ */
+
+var _hasClass$addClass$removeClass$escapeHtml$_show$show$_hide$hide$isDescendant$getTopMargin$fadeIn$fadeOut$fireClick$stopEventPropagation = require('./modules/handle-dom');
+
+/*
+ * Handy utilities
+ */
+
+var _extend$hexToRgb$isIE8$logStr$colorLuminance = require('./modules/utils');
+
+/*
+ *  Handle sweetAlert's DOM elements
+ */
+
+var _sweetAlertInitialize$getModal$getOverlay$getInput$setFocusStyle$openModal$resetInput$fixVerticalPosition = require('./modules/handle-swal-dom');
+
+// Handle button events and keyboard events
+
+var _handleButton$handleConfirm$handleCancel = require('./modules/handle-click');
+
+var _handleKeyDown = require('./modules/handle-key');
+
+var _handleKeyDown2 = _interopRequireWildcard(_handleKeyDown);
+
+// Default values
+
+var _defaultParams = require('./modules/default-params');
+
+var _defaultParams2 = _interopRequireWildcard(_defaultParams);
+
+var _setParameters = require('./modules/set-params');
+
+var _setParameters2 = _interopRequireWildcard(_setParameters);
+
+/*
+ * Remember state in cases where opening and handling a modal will fiddle with it.
+ * (We also use window.previousActiveElement as a global variable)
+ */
+var previousWindowKeyDown;
+var lastFocusedButton;
+
+/*
+ * Global sweetAlert function
+ * (this is what the user calls)
+ */
+var sweetAlert, swal;
+
+exports['default'] = sweetAlert = swal = function () {
+  var customizations = arguments[0];
+
+  _hasClass$addClass$removeClass$escapeHtml$_show$show$_hide$hide$isDescendant$getTopMargin$fadeIn$fadeOut$fireClick$stopEventPropagation.addClass(document.body, 'stop-scrolling');
+  _sweetAlertInitialize$getModal$getOverlay$getInput$setFocusStyle$openModal$resetInput$fixVerticalPosition.resetInput();
+
+  /*
+   * Use argument if defined or default value from params object otherwise.
+   * Supports the case where a default value is boolean true and should be
+   * overridden by a corresponding explicit argument which is boolean false.
+   */
+  function argumentOrDefault(key) {
+    var args = customizations;
+    return args[key] === undefined ? _defaultParams2['default'][key] : args[key];
+  }
+
+  if (customizations === undefined) {
+    _extend$hexToRgb$isIE8$logStr$colorLuminance.logStr('SweetAlert expects at least 1 attribute!');
+    return false;
+  }
+
+  var params = _extend$hexToRgb$isIE8$logStr$colorLuminance.extend({}, _defaultParams2['default']);
+
+  switch (typeof customizations) {
+
+    // Ex: swal("Hello", "Just testing", "info");
+    case 'string':
+      params.title = customizations;
+      params.text = arguments[1] || '';
+      params.type = arguments[2] || '';
+      break;
+
+    // Ex: swal({ title:"Hello", text: "Just testing", type: "info" });
+    case 'object':
+      if (customizations.title === undefined) {
+        _extend$hexToRgb$isIE8$logStr$colorLuminance.logStr('Missing "title" argument!');
+        return false;
+      }
+
+      params.title = customizations.title;
+
+      for (var customName in _defaultParams2['default']) {
+        params[customName] = argumentOrDefault(customName);
+      }
+
+      // Show "Confirm" instead of "OK" if cancel button is visible
+      params.confirmButtonText = params.showCancelButton ? 'Confirm' : _defaultParams2['default'].confirmButtonText;
+      params.confirmButtonText = argumentOrDefault('confirmButtonText');
+
+      // Callback function when clicking on "OK"/"Cancel"
+      params.doneFunction = arguments[1] || null;
+
+      break;
+
+    default:
+      _extend$hexToRgb$isIE8$logStr$colorLuminance.logStr('Unexpected type of argument! Expected "string" or "object", got ' + typeof customizations);
+      return false;
+
+  }
+
+  _setParameters2['default'](params);
+  _sweetAlertInitialize$getModal$getOverlay$getInput$setFocusStyle$openModal$resetInput$fixVerticalPosition.fixVerticalPosition();
+  _sweetAlertInitialize$getModal$getOverlay$getInput$setFocusStyle$openModal$resetInput$fixVerticalPosition.openModal(arguments[1]);
+
+  // Modal interactions
+  var modal = _sweetAlertInitialize$getModal$getOverlay$getInput$setFocusStyle$openModal$resetInput$fixVerticalPosition.getModal();
+
+  /*
+   * Make sure all modal buttons respond to all events
+   */
+  var $buttons = modal.querySelectorAll('button');
+  var buttonEvents = ['onclick', 'onmouseover', 'onmouseout', 'onmousedown', 'onmouseup', 'onfocus'];
+  var onButtonEvent = function onButtonEvent(e) {
+    return _handleButton$handleConfirm$handleCancel.handleButton(e, params, modal);
+  };
+
+  for (var btnIndex = 0; btnIndex < $buttons.length; btnIndex++) {
+    for (var evtIndex = 0; evtIndex < buttonEvents.length; evtIndex++) {
+      var btnEvt = buttonEvents[evtIndex];
+      $buttons[btnIndex][btnEvt] = onButtonEvent;
+    }
+  }
+
+  // Clicking outside the modal dismisses it (if allowed by user)
+  _sweetAlertInitialize$getModal$getOverlay$getInput$setFocusStyle$openModal$resetInput$fixVerticalPosition.getOverlay().onclick = onButtonEvent;
+
+  previousWindowKeyDown = window.onkeydown;
+
+  var onKeyEvent = function onKeyEvent(e) {
+    return _handleKeyDown2['default'](e, params, modal);
+  };
+  window.onkeydown = onKeyEvent;
+
+  window.onfocus = function () {
+    // When the user has focused away and focused back from the whole window.
+    setTimeout(function () {
+      // Put in a timeout to jump out of the event sequence.
+      // Calling focus() in the event sequence confuses things.
+      if (lastFocusedButton !== undefined) {
+        lastFocusedButton.focus();
+        lastFocusedButton = undefined;
+      }
+    }, 0);
+  };
+
+  // Show alert with enabled buttons always
+  swal.enableButtons();
+};
+
+/*
+ * Set default params for each popup
+ * @param {Object} userParams
+ */
+sweetAlert.setDefaults = swal.setDefaults = function (userParams) {
+  if (!userParams) {
+    throw new Error('userParams is required');
+  }
+  if (typeof userParams !== 'object') {
+    throw new Error('userParams has to be a object');
+  }
+
+  _extend$hexToRgb$isIE8$logStr$colorLuminance.extend(_defaultParams2['default'], userParams);
+};
+
+/*
+ * Animation when closing modal
+ */
+sweetAlert.close = swal.close = function () {
+  var modal = _sweetAlertInitialize$getModal$getOverlay$getInput$setFocusStyle$openModal$resetInput$fixVerticalPosition.getModal();
+
+  _hasClass$addClass$removeClass$escapeHtml$_show$show$_hide$hide$isDescendant$getTopMargin$fadeIn$fadeOut$fireClick$stopEventPropagation.fadeOut(_sweetAlertInitialize$getModal$getOverlay$getInput$setFocusStyle$openModal$resetInput$fixVerticalPosition.getOverlay(), 5);
+  _hasClass$addClass$removeClass$escapeHtml$_show$show$_hide$hide$isDescendant$getTopMargin$fadeIn$fadeOut$fireClick$stopEventPropagation.fadeOut(modal, 5);
+  _hasClass$addClass$removeClass$escapeHtml$_show$show$_hide$hide$isDescendant$getTopMargin$fadeIn$fadeOut$fireClick$stopEventPropagation.removeClass(modal, 'showSweetAlert');
+  _hasClass$addClass$removeClass$escapeHtml$_show$show$_hide$hide$isDescendant$getTopMargin$fadeIn$fadeOut$fireClick$stopEventPropagation.addClass(modal, 'hideSweetAlert');
+  _hasClass$addClass$removeClass$escapeHtml$_show$show$_hide$hide$isDescendant$getTopMargin$fadeIn$fadeOut$fireClick$stopEventPropagation.removeClass(modal, 'visible');
+
+  /*
+   * Reset icon animations
+   */
+  var $successIcon = modal.querySelector('.sa-icon.sa-success');
+  _hasClass$addClass$removeClass$escapeHtml$_show$show$_hide$hide$isDescendant$getTopMargin$fadeIn$fadeOut$fireClick$stopEventPropagation.removeClass($successIcon, 'animate');
+  _hasClass$addClass$removeClass$escapeHtml$_show$show$_hide$hide$isDescendant$getTopMargin$fadeIn$fadeOut$fireClick$stopEventPropagation.removeClass($successIcon.querySelector('.sa-tip'), 'animateSuccessTip');
+  _hasClass$addClass$removeClass$escapeHtml$_show$show$_hide$hide$isDescendant$getTopMargin$fadeIn$fadeOut$fireClick$stopEventPropagation.removeClass($successIcon.querySelector('.sa-long'), 'animateSuccessLong');
+
+  var $errorIcon = modal.querySelector('.sa-icon.sa-error');
+  _hasClass$addClass$removeClass$escapeHtml$_show$show$_hide$hide$isDescendant$getTopMargin$fadeIn$fadeOut$fireClick$stopEventPropagation.removeClass($errorIcon, 'animateErrorIcon');
+  _hasClass$addClass$removeClass$escapeHtml$_show$show$_hide$hide$isDescendant$getTopMargin$fadeIn$fadeOut$fireClick$stopEventPropagation.removeClass($errorIcon.querySelector('.sa-x-mark'), 'animateXMark');
+
+  var $warningIcon = modal.querySelector('.sa-icon.sa-warning');
+  _hasClass$addClass$removeClass$escapeHtml$_show$show$_hide$hide$isDescendant$getTopMargin$fadeIn$fadeOut$fireClick$stopEventPropagation.removeClass($warningIcon, 'pulseWarning');
+  _hasClass$addClass$removeClass$escapeHtml$_show$show$_hide$hide$isDescendant$getTopMargin$fadeIn$fadeOut$fireClick$stopEventPropagation.removeClass($warningIcon.querySelector('.sa-body'), 'pulseWarningIns');
+  _hasClass$addClass$removeClass$escapeHtml$_show$show$_hide$hide$isDescendant$getTopMargin$fadeIn$fadeOut$fireClick$stopEventPropagation.removeClass($warningIcon.querySelector('.sa-dot'), 'pulseWarningIns');
+
+  // Reset custom class (delay so that UI changes aren't visible)
+  setTimeout(function () {
+    var customClass = modal.getAttribute('data-custom-class');
+    _hasClass$addClass$removeClass$escapeHtml$_show$show$_hide$hide$isDescendant$getTopMargin$fadeIn$fadeOut$fireClick$stopEventPropagation.removeClass(modal, customClass);
+  }, 300);
+
+  // Make page scrollable again
+  _hasClass$addClass$removeClass$escapeHtml$_show$show$_hide$hide$isDescendant$getTopMargin$fadeIn$fadeOut$fireClick$stopEventPropagation.removeClass(document.body, 'stop-scrolling');
+
+  // Reset the page to its previous state
+  window.onkeydown = previousWindowKeyDown;
+  if (window.previousActiveElement) {
+    window.previousActiveElement.focus();
+  }
+  lastFocusedButton = undefined;
+  clearTimeout(modal.timeout);
+
+  return true;
+};
+
+/*
+ * Validation of the input field is done by user
+ * If something is wrong => call showInputError with errorMessage
+ */
+sweetAlert.showInputError = swal.showInputError = function (errorMessage) {
+  var modal = _sweetAlertInitialize$getModal$getOverlay$getInput$setFocusStyle$openModal$resetInput$fixVerticalPosition.getModal();
+
+  var $errorIcon = modal.querySelector('.sa-input-error');
+  _hasClass$addClass$removeClass$escapeHtml$_show$show$_hide$hide$isDescendant$getTopMargin$fadeIn$fadeOut$fireClick$stopEventPropagation.addClass($errorIcon, 'show');
+
+  var $errorContainer = modal.querySelector('.sa-error-container');
+  _hasClass$addClass$removeClass$escapeHtml$_show$show$_hide$hide$isDescendant$getTopMargin$fadeIn$fadeOut$fireClick$stopEventPropagation.addClass($errorContainer, 'show');
+
+  $errorContainer.querySelector('p').innerHTML = errorMessage;
+
+  setTimeout(function () {
+    sweetAlert.enableButtons();
+  }, 1);
+
+  modal.querySelector('input').focus();
+};
+
+/*
+ * Reset input error DOM elements
+ */
+sweetAlert.resetInputError = swal.resetInputError = function (event) {
+  // If press enter => ignore
+  if (event && event.keyCode === 13) {
+    return false;
+  }
+
+  var $modal = _sweetAlertInitialize$getModal$getOverlay$getInput$setFocusStyle$openModal$resetInput$fixVerticalPosition.getModal();
+
+  var $errorIcon = $modal.querySelector('.sa-input-error');
+  _hasClass$addClass$removeClass$escapeHtml$_show$show$_hide$hide$isDescendant$getTopMargin$fadeIn$fadeOut$fireClick$stopEventPropagation.removeClass($errorIcon, 'show');
+
+  var $errorContainer = $modal.querySelector('.sa-error-container');
+  _hasClass$addClass$removeClass$escapeHtml$_show$show$_hide$hide$isDescendant$getTopMargin$fadeIn$fadeOut$fireClick$stopEventPropagation.removeClass($errorContainer, 'show');
+};
+
+/*
+ * Disable confirm and cancel buttons
+ */
+sweetAlert.disableButtons = swal.disableButtons = function (event) {
+  var modal = _sweetAlertInitialize$getModal$getOverlay$getInput$setFocusStyle$openModal$resetInput$fixVerticalPosition.getModal();
+  var $confirmButton = modal.querySelector('button.confirm');
+  var $cancelButton = modal.querySelector('button.cancel');
+  $confirmButton.disabled = true;
+  $cancelButton.disabled = true;
+};
+
+/*
+ * Enable confirm and cancel buttons
+ */
+sweetAlert.enableButtons = swal.enableButtons = function (event) {
+  var modal = _sweetAlertInitialize$getModal$getOverlay$getInput$setFocusStyle$openModal$resetInput$fixVerticalPosition.getModal();
+  var $confirmButton = modal.querySelector('button.confirm');
+  var $cancelButton = modal.querySelector('button.cancel');
+  $confirmButton.disabled = false;
+  $cancelButton.disabled = false;
+};
+
+if (typeof window !== 'undefined') {
+  // The 'handle-click' module requires
+  // that 'sweetAlert' was set as global.
+  window.sweetAlert = window.swal = sweetAlert;
+} else {
+  _extend$hexToRgb$isIE8$logStr$colorLuminance.logStr('SweetAlert is a frontend module!');
+}
+module.exports = exports['default'];
+},{"./modules/default-params":19,"./modules/handle-click":20,"./modules/handle-dom":21,"./modules/handle-key":22,"./modules/handle-swal-dom":23,"./modules/set-params":25,"./modules/utils":26}],28:[function(require,module,exports){
 //     Underscore.js 1.8.3
 //     http://underscorejs.org
 //     (c) 2009-2015 Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
