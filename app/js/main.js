@@ -76,13 +76,16 @@ var BuildController = function BuildController($scope, $http, PARSE) {
 
   function Style(obj) {
     this.style = obj.style;
+    this.og = obj.og;
   }
 
   $scope.addStyle = function (style) {
     var x = new Style(style);
     $scope.beerStyle = {
-      style: x
+      style: x.style,
+      og: x.og
     };
+    console.log($scope.beerStyle);
     $scope.style = {};
   };
 
@@ -151,7 +154,9 @@ var BuildController = function BuildController($scope, $http, PARSE) {
 
     };
 
-    $http.post(url, recipe, PARSE.CONFIG).then(function (res) {});
+    $http.post(url, recipe, PARSE.CONFIG).then(function (res) {
+      console.log(res);
+    });
   };
 };
 
@@ -161,31 +166,34 @@ exports['default'] = BuildController;
 module.exports = exports['default'];
 
 },{}],3:[function(require,module,exports){
-'use strict';
+"use strict";
 
-Object.defineProperty(exports, '__esModule', {
+Object.defineProperty(exports, "__esModule", {
   value: true
 });
 var CalcController = function CalcController($scope) {
   $scope.title = 'Calculators';
   $scope.answer = 0;
-  $scope.ibuCalc = function (w, a, u, b) {
+  $scope.ibuCalc = function (w, z, u, b) {
 
-    $scope.answer = w * a * u / (1.34 * b) + $scope.answer;
+    $scope.answer = w * z * u / (1.34 * b) + $scope.answer;
   };
   $scope.reset = function () {
     $scope.answer = 0;
   };
   $scope.mashCalc = function (a, b, c, d) {
-    $scope.mash = .2 / (c / d) * (a - b) + a;
-    console.log(a, b, c, d);
+    var r = c / d;
+    var x = a - b;
+    var mashy = .2 / r;
+    var uhh = mashy * x;
+    $scope.mash = "Your Target Temp: " + (Number(a) + uhh) + "F";
   };
 };
 
 CalcController.$inject = ['$scope'];
 
-exports['default'] = CalcController;
-module.exports = exports['default'];
+exports["default"] = CalcController;
+module.exports = exports["default"];
 
 },{}],4:[function(require,module,exports){
 'use strict';
@@ -249,15 +257,18 @@ var RecipeController = function RecipeController($scope, $http, PARSE, BeerServi
   $http.get(url, PARSE.CONFIG).then(function (res) {
 
     var wat = res.data.results;
+    console.log(wat);
     wat.map(function (x) {
       var y = x.name.name.name;
-      var z = x.style.style.style;
+      var z = x.style;
       var id = x.objectId;
       var nameObj = {
         name: y,
-        style: z,
+        style: z.style,
+
         id: id
       };
+
       $scope.nameList.push(nameObj);
       console.log($scope.nameList);
     });
@@ -289,6 +300,12 @@ var SingleController = function SingleController($scope, $stateParams, $http, PA
   $http.get(url, PARSE.CONFIG).then(function (res) {
 
     $scope.recipe = res.data;
+
+    $scope['delete'] = function () {
+      $http['delete'](url, PARSE.CONFIG).then(function (res) {
+        console.log(res);
+      });
+    };
   });
 };
 SingleController.$inject = ['$scope', '$stateParams', '$http', 'PARSE'];

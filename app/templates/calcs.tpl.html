@@ -4,10 +4,10 @@
 <h4>IBU Calculator</h4>
 <form>
   <input type="text" placeholder="Weight of hop in ounces" ng-model="w">
-  <input type="text" placeholder="Alpha Acid %" ng-model="a">
+  <input type="text" placeholder="Alpha Acid %" ng-model="z">
   <input type="text" placeholder="Utilization (see below)" ng-model="u">
   <input type="text" placeholder="Boil Size" ng-model="b">
-  <button ng-click="ibuCalc(w, a, u, b)">Calculate</button>
+  <button ng-click="ibuCalc(w, z, u, b)">Calculate</button>
   <span class='ibu'>IBUs: {{answer}}</span>
   <button ng-click="reset()">Reset</button>
 </form>
@@ -46,12 +46,12 @@
 <div class="mash">
 <h4>Strike Water Calculator</h4>
 <form ng-submit="mashCalc(a, b, c, d)">
-  <input type="text" placeholder="Target Mash Temp" ng-model="a">
-  <input type="text" placeholder="Grain Temp" ng-model="b">
+  <input type="text" placeholder="Target Mash Temp (F)" ng-model="a">
+  <input type="text" placeholder="Grain Temp (F)" ng-model="b">
   <input type="text" placeholder="Water Volume
   (quarts)" ng-model="c">
-  <input type="text" placeholder="Grain Weight" ng-model="d">
-  <button>Calculate</button><span>{{mash}}</span>
+  <input type="text" placeholder="Grain Weight (lbs)" ng-model="d">
+  <button>Calculate</button><span> {{mash}}</span>
 </form>
 </div>
 

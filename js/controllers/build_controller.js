@@ -24,14 +24,17 @@ let BuildController = function($scope, $http, PARSE){
   $scope.beerStyle={};
 
   function Style (obj){
-    this.style = obj.style
+    this.style = obj.style;
+    this.og=obj.og;
   }
 
   $scope.addStyle = function (style) {
     let x = new Style(style);
     $scope.beerStyle = {
-      style: x
+      style: x.style,
+      og: x.og
     };
+    console.log($scope.beerStyle)
     $scope.style={};
   }
 
@@ -102,7 +105,7 @@ let BuildController = function($scope, $http, PARSE){
     }
     
     $http.post(url, recipe, PARSE.CONFIG).then( (res)=>{
-     
+      console.log(res);
     })
 
   };

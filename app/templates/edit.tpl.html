@@ -3,7 +3,8 @@
 <a href="#/about">Cancel</a>
 <form ng-submit="update(recipe)">
   <span>Name</span><input ng-model="recipe.name.name.name">
-  <span>Style</span><input ng-model="recipe.style.style.style">
+  <span>Style</span><input ng-model="recipe.style.style">
+  <span>OG-FG</span><input ng-model="recipe.style.og">
   <ul>
     <li ng-repeat="g in recipe.grains">
       <span>Grain Type</span><input ng-model="g.grain">

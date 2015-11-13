@@ -6,8 +6,12 @@ let SingleController = function($scope, $stateParams, $http, PARSE) {
   $http.get(url, PARSE.CONFIG).then( (res) => {
 
     $scope.recipe = res.data;
-  
-        
+    
+  $scope.delete= function(){
+    $http.delete(url, PARSE.CONFIG).then((res)=>{
+      console.log(res);
+    })
+  }      
 });
 }
 SingleController.$inject = ['$scope', '$stateParams', '$http', 'PARSE'];

@@ -6424,6 +6424,10 @@ footer {
   .calc .ibu {
     margin: 5px; }
 
+.mash {
+  width: 40%;
+  margin: 0 auto; }
+
 .edit {
   width: 40%;
   margin: 0 auto; }

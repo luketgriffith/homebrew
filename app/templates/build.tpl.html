@@ -7,6 +7,7 @@
   </form>
   <form ng-submit="addStyle(style)">
     <input type="text" placeholder="Beer Style" ng-model="style.style">
+    <input type="text" placeholder="OG-FG" ng-model="style.og">
     <button>Add</button>
   </form>
 
@@ -45,8 +46,8 @@
 
 <div class="recipe">
   <h2>Recipe</h2>
-  <h3 ng-repeat="n in beerName">{{n.name}}</h3>
-  <h4 ng-repeat="s in beerStyle">{{s.style}}</h4>
+  <h4>{{beerName.name.name}}</h4>
+  <h4>{{beerStyle.style}} {{beerStyle.og}}</h4>
   <h3>Grain</h3>
   <ul>
     <li ng-repeat = "g in grainList">{{g.weight}} lb  {{g.grain}}</li>
